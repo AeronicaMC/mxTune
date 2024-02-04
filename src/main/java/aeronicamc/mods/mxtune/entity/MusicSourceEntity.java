@@ -59,7 +59,7 @@ public class MusicSourceEntity extends Entity {
     public void tick() {
         super.tick();
 
-        // fix for saved entity music source so they don't NPE on a tick.
+        // fix for saved entity music source, so they don't NPE on a tick.
         if (source == null) {
             source = this.blockPosition();
         }
@@ -125,7 +125,7 @@ public class MusicSourceEntity extends Entity {
             double blockHeight = !voxelShape.isEmpty() ? voxelShape.bounds().maxY : 0;
 
             List<MusicSourceEntity> sittableEntities = world.getEntitiesOfClass(MusicSourceEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
-            if (sittableEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty())))) {
+            if (sittableEntities.isEmpty() && !(blockStateBelowFoot.getBlock() instanceof AirBlock || !blockStateBelowFoot.getFluidState().isEmpty())) {
                 double ridingOffset = shouldSit ? -1 * 0.0625D : playerIn.getMyRidingOffset();
                 MusicSourceEntity stand = new MusicSourceEntity(world, blockUnderFoot(playerIn));
                 world.addFreshEntity(stand);

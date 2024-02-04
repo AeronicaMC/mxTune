@@ -29,9 +29,9 @@ public class TestScreen extends Screen
     private final MXTextFieldWidget musicTextWidget = new MXTextFieldWidget(Reference.MAX_MML_PART_LENGTH);
     private MXLabel labelTitle;
     private boolean initialized;
-    private final MXButton buttonOpen = new MXButton((open) -> onButtonOpen());
-    private final MXButton buttonFile = new MXButton((file) -> onButtonFile());
-    private final MXButton buttonGuiMXT = new MXButton((file) -> onGuiMXT());
+    private final MXButton buttonOpen = new MXButton(open -> onButtonOpen());
+    private final MXButton buttonFile = new MXButton(file -> onButtonFile());
+    private final MXButton buttonGuiMXT = new MXButton(file -> onGuiMXT());
 
     public TestScreen()
     {
@@ -61,9 +61,8 @@ public class TestScreen extends Screen
         addButton(buttonOpen);
 
         this.addButton(new MXButton(buttonOpen.getLeft(), buttonOpen.getBottom(), 50, 20, new TranslationTextComponent("gui.done"),
-                                    (done) -> Objects.requireNonNull(minecraft).popGuiLayer()));
+                done -> Objects.requireNonNull(minecraft).popGuiLayer()));
 
-        //sfpWidget.setLayout(128, height - 30 , 15, height - 15, 15);
         sfpWidget.setLayout(5, 5, 128, height - 10);
         sfpWidget.setCallBack((entry, doubleClicked)-> {
             Misc.addToast(new MXToast());
@@ -120,12 +119,6 @@ public class TestScreen extends Screen
     }
 
     @Override
-    public boolean keyPressed(int pKeyPressed1, int pKeyPressed2, int pKeyPressed3)
-    {
-        return super.keyPressed(pKeyPressed1, pKeyPressed2, pKeyPressed3);
-    }
-
-    @Override
     public boolean shouldCloseOnEsc()
     {
         return false;
@@ -139,14 +132,7 @@ public class TestScreen extends Screen
         Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(false);
         super.removed();
     }
-
-    // Called on ESC key and minecraft.displayGuiScreen(this.lastScreen);
-    @Override
-    public void onClose()
-    {
-        super.onClose();
-    }
-
+    
     @Override
     public boolean isPauseScreen()
     {

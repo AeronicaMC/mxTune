@@ -92,79 +92,79 @@ public class DirectoryWatcher implements Runnable, Service {
 
     @Override
     public void run() {
-        WatchService watchService;
+        WatchService watchService = null;
         try {
             watchService = FileSystems.getDefault().newWatchService();
         } catch (IOException ioe) {
-            throw new RuntimeException("Exception while creating watch service.", ioe);
-        }
-        Map<WatchKey, Path> watchKeyToDirectory = new HashMap<>();
+            LOGGER.warn("Exception while creating watch service. Refresh Manually", ioe);
+        } finally {
+            if (watchService != null) {
+                Map<WatchKey, Path> watchKeyToDirectory = new HashMap<>();
 
-        for (Path dir : mWatched) {
-            try {
-                if (mPreExistingAsCreated) {
-                    try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
-                        for (Path path : stream) {
-                            if (mFilter.accept(path)) {
-                                mListener.onEvent(Event.ENTRY_CREATE, dir.resolve(path));
+                for (Path dir : mWatched) {
+                    try {
+                        if (mPreExistingAsCreated) {
+                            try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+                                for (Path path : stream) {
+                                    if (mFilter.accept(path)) {
+                                        mListener.onEvent(Event.ENTRY_CREATE, dir.resolve(path));
+                                    }
+                                }
                             }
                         }
+
+                        WatchKey key = dir.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
+                        watchKeyToDirectory.put(key, dir);
+                    } catch (IOException ioe) {
+                        LOGGER.error("Not watching '{}'.", dir, ioe);
                     }
                 }
-
-                WatchKey key = dir.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
-                watchKeyToDirectory.put(key, dir);
-            } catch (IOException ioe) {
-                LOGGER.error("Not watching '{}'.", dir, ioe);
-            }
-        }
-
-        while (true) {
-            if (Thread.interrupted()) {
-                LOGGER.info("Directory watcher thread interrupted.");
-                break;
-            }
-
-            WatchKey key;
-            try {
-                key = watchService.take();
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                continue;
-            }
-
-            Path dir = watchKeyToDirectory.get(key);
-            if (dir == null) {
-                LOGGER.warn("Watch key not recognized.");
-                continue;
-            }
-
-            for (WatchEvent<?> event : key.pollEvents()) {
-                if (event.kind().equals(OVERFLOW)) {
-                    break;
-                }
-
-                WatchEvent<Path> pathEvent = cast(event);
-                WatchEvent.Kind<Path> kind = pathEvent.kind();
-
-                Path path = dir.resolve(pathEvent.context());
-                try
-                {
-                    if (mFilter.accept(path) && EVENT_MAP.containsKey(kind)) {
-                        mListener.onEvent(EVENT_MAP.get(kind), path);
+                while (true) {
+                    if (Thread.interrupted()) {
+                        LOGGER.info("Directory watcher thread interrupted.");
+                        break;
                     }
-                } catch (IOException ioee)
-                {
-                    LOGGER.error("Not filtered '{}'.", dir, ioee);
-                }
-            }
 
-            boolean valid = key.reset();
-            if (!valid) {
-                watchKeyToDirectory.remove(key);
-                LOGGER.warn("'{}' is inaccessible. Stopping watch.", dir);
-                if (watchKeyToDirectory.isEmpty()) {
-                    break;
+                    WatchKey key;
+                    try {
+                        key = watchService.take();
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        continue;
+                    }
+
+                    Path dir = watchKeyToDirectory.get(key);
+                    if (dir == null) {
+                        LOGGER.warn("Watch key not recognized.");
+                        continue;
+                    }
+
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        if (event.kind().equals(OVERFLOW)) {
+                            break;
+                        }
+
+                        WatchEvent<Path> pathEvent = cast(event);
+                        WatchEvent.Kind<Path> kind = pathEvent.kind();
+
+                        Path path = dir.resolve(pathEvent.context());
+                        try {
+                            if (mFilter.accept(path) && EVENT_MAP.containsKey(kind)) {
+                                mListener.onEvent(EVENT_MAP.get(kind), path);
+                            }
+                        } catch (IOException ioe2) {
+                            LOGGER.error("Not filtered '{}'.", dir, ioe2);
+                        }
+                    }
+
+                    boolean valid = key.reset();
+                    if (!valid) {
+                        watchKeyToDirectory.remove(key);
+                        LOGGER.warn("'{}' is inaccessible. Stopping watch.", dir);
+                        if (watchKeyToDirectory.isEmpty()) {
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -178,7 +178,7 @@ public class DirectoryWatcher implements Runnable, Service {
 
         private static final Filter<Path> NO_FILTER = path -> true;
 
-        private Set<Path> mWatched = new HashSet<>();
+        private final Set<Path> mWatched = new HashSet<>();
         private boolean mPreExistingAsCreated = false;
         private Filter<Path> mFilter = NO_FILTER;
         private Listener mListener;

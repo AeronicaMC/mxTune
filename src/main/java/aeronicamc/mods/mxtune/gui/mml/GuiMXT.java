@@ -509,9 +509,9 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private void helpToggled()
     {
         buttonGuiHelp.setHelpEnabled(!buttonGuiHelp.isHelpEnabled());
-        children.stream().filter(b -> b instanceof IHooverText)
+        children.stream().filter(IHooverText.class::isInstance)
                 .forEach(b -> ((IHooverText) b).setHooverTextOverride(buttonGuiHelp.isHelpEnabled()));
-        childTabs[activeChildIndex].children().stream().filter(b -> b instanceof IHooverText)
+        childTabs[activeChildIndex].children().stream().filter(IHooverText.class::isInstance)
                 .forEach(b -> ((IHooverText) b).setHooverTextOverride(buttonGuiHelp.isHelpEnabled()));
         updateButtons();
     }
@@ -584,7 +584,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         if (!fileName.isEmpty() && !textTitle.getValue().trim().isEmpty())
         {
             setDisplayedFilename(fileName);
-            LOGGER.info("Write file: {}", fileName + FileHelper.EXTENSION_MXT);
+            LOGGER.info("Write file: {}{}", fileName, FileHelper.EXTENSION_MXT);
             createMxt();
             CompoundNBT compound = new CompoundNBT();
             mxTuneFile.writeToNBT(compound);

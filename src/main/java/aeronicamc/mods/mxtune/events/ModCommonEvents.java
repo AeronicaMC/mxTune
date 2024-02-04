@@ -32,10 +32,15 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Objects;
+
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class ModCommonEvents
 {
     private static final Logger LOGGER = LogManager.getLogger(ModCommonEvents.class);
+
+    private ModCommonEvents() { /* NOOP */ }
+
     @SubscribeEvent
     public static void event(PlayerEvent.StartTracking event)
     {
@@ -104,12 +109,6 @@ public class ModCommonEvents
         return itemStack.getItem().is(ModTags.Items.INSTRUMENTS) || itemStack.getItem().is(ModTags.Items.MUSIC_MACHINES);
     }
 
-    private static String hooverName(ItemStack itemStack)
-    {
-        return itemStack.getHoverName().getString();
-    }
-
-
     // Test if a player can break this block with a BE of type ILockable.
     // Only the owner of the block can break these.
     @SubscribeEvent
@@ -153,7 +152,7 @@ public class ModCommonEvents
         {
             PlayerEntity player = event.getPlayer();
             // testing PIN Gui
-            if (player.getMainHandItem().getItem().getRegistryName().equals(ModItems.PLACARD_ITEM.getId()))
+            if (Objects.equals(player.getMainHandItem().getItem().getRegistryName(), ModItems.PLACARD_ITEM.getId()))
                 PacketDispatcher.sendTo(new OpenPinEntryMessage(0), (ServerPlayerEntity) player);
         }
     }

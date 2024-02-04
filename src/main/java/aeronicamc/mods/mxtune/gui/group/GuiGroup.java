@@ -103,7 +103,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         int leftSideWidth = memberDisplayLeft.getWidth();
         int middleWidth = groupDisplayWidth + 50;
         int rightSideWidth = memberDisplayRight.getWidth();
-        int left = ((width - (middleWidth + leftSideWidth + rightSideWidth))) / 2;
+        int left = (width - (middleWidth + leftSideWidth + rightSideWidth)) / 2;
         int top = (height - memberDisplayLeft.getHeight()) / 2;
 
         memberDisplayLeft.initMemberDisplay(left, top);
@@ -195,7 +195,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         buttonDisband.addHooverText(false, DISBAND_HELP03);
         helpButton.addHooverText(true, HELP_HELP01);
         helpButton.addHooverText(false, helpButton.isHelpEnabled() ? HELP_HELP02 : HELP_HELP03);
-        buttons.stream().filter(b -> b instanceof IHooverText)
+        buttons.stream().filter(IHooverText.class::isInstance)
                 .forEach(b -> ((IHooverText) b).setHooverTextOverride(helpButton.isHelpEnabled()));
     }
 
@@ -214,16 +214,12 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     private void modeToggle()
     {
         Cmd cmd = Cmd.NIL;
-        switch (groupMode)
-        {
-            case PIN:
-                setMode(Group.Mode.OPEN);
-                cmd = Cmd.MODE_OPEN;
-                break;
-            case OPEN:
-                setMode(Group.Mode.PIN);
-                cmd = Cmd.MODE_PIN;
-                break;
+        if (Objects.requireNonNull(groupMode) == Group.Mode.PIN) {
+            setMode(Group.Mode.OPEN);
+            cmd = Cmd.MODE_OPEN;
+        } else if (groupMode == Group.Mode.OPEN) {
+            setMode(Group.Mode.PIN);
+            cmd = Cmd.MODE_PIN;
         }
         PacketDispatcher.sendToServer(new GroupCmdMessage(null, cmd, player().getId()));
         updateButtonState();
@@ -231,13 +227,13 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
 
     private void setMode(Group.Mode mode)
     {
-        Group group = GroupClient.getGroupById(groupId);
+        Group groupLocal = GroupClient.getGroupById(groupId);
         groupMode = mode;
         buttonGroupMode.setMessage(getGroupModeName(groupMode));
 
-        buttonNewPin.active = mode.equals(Group.Mode.PIN) && player().getId() == group.getLeader();
-        buttonGroupMode.active = player().getId() == group.getLeader();
-        buttonDisband.active = player().getId() == group.getLeader();
+        buttonNewPin.active = mode.equals(Group.Mode.PIN) && player().getId() == groupLocal.getLeader();
+        buttonGroupMode.active = player().getId() == groupLocal.getLeader();
+        buttonDisband.active = player().getId() == groupLocal.getLeader();
     }
 
     private ITextComponent getGroupModeName(Group.Mode mode)
@@ -279,12 +275,6 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     {
         helpButton.setHelpEnabled(!helpButton.isHelpEnabled());
         updateButtonState();
-    }
-
-    @Override
-    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers)
-    {
-        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
     }
 
     @Override

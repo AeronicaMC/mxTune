@@ -121,6 +121,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
+    @Override
     public void addAdditionalSaveData(CompoundNBT pCompound) {
         pCompound.putString(TAG_PANEL, String.valueOf(MXRegistry.INFO_PANEL_REGISTRY.get().getKey(infoPanelType)));
         pCompound.putByte(TAG_FACING, (byte)this.direction.get2DDataValue());
@@ -130,6 +131,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
+    @Override
     public void readAdditionalSaveData(CompoundNBT pCompound) {
         this.infoPanelType = MXRegistry.INFO_PANEL_REGISTRY.get().getValue(ResourceLocation.tryParse(pCompound.getString(TAG_PANEL)));
         this.direction = Direction.from2DDataValue(pCompound.getByte(TAG_FACING));

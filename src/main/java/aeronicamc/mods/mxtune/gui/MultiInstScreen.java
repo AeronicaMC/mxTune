@@ -98,7 +98,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
     private void helpClicked()
     {
         helpButton.setHelpEnabled(!helpButton.isHelpEnabled());
-        buttons.stream().filter(b -> b instanceof IHooverText)
+        buttons.stream().filter(IHooverText.class::isInstance)
                 .forEach(b -> ((IHooverText) b).setHooverTextOverride(helpButton.isHelpEnabled()));
         updateButtonStatuses();
     }
@@ -158,13 +158,6 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
     {
         if (autoSelectState.getOnOff() && operation.equals(Type.Inserted) && slotIndex == 0 && SheetMusicHelper.hasMusicText(itemStack))
             updateButton(getSheetMusicSoundProxyIndex(itemStack));
-    }
-
-    @Override
-    public void tick()
-    {
-        super.tick();
-
     }
 
     @Override

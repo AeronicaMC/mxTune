@@ -26,7 +26,7 @@ public class ToolManager
     public static final Codec<Map<String, MusicVenueTool>> CODEC = Codec.unboundedMap(Codec.STRING, MusicVenueTool.CODEC);
     private static final Map<String, MusicVenueTool> playerTools = new ConcurrentHashMap<>();
 
-    public ToolManager() { /* NOP */ }
+    private ToolManager() { /* NOP */ }
 
     /**
      * Serverside use only
@@ -91,6 +91,7 @@ public class ToolManager
                     break;
                 case DONE:
                     sync(player);
+                    break;
                 default:
             }
         });

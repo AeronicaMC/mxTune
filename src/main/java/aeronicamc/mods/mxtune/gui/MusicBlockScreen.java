@@ -106,7 +106,7 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     private void helpClicked()
     {
         helpButton.setHelpEnabled(!helpButton.isHelpEnabled());
-        buttons.stream().filter(b -> b instanceof IHooverText)
+        buttons.stream().filter(IHooverText.class::isInstance)
                 .forEach(b -> ((IHooverText) b).setHooverTextOverride(helpButton.isHelpEnabled()));
         updateButtonStatuses();
     }
@@ -203,11 +203,11 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     protected void renderLabels(MatrixStack matrixStack , int mouseX, int mouseY) {
         String text = SheetMusicHelper.formatDuration(menu.getDuration());
         int durationWidth = this.font.width(text);
-        ITextComponent ownerName = new StringTextComponent(netPlayerInfo != null ? netPlayerInfo.getProfile().getName() : "-offline-").withStyle(TextFormatting.ITALIC);
-        int nameWidth = this.font.width(ownerName);
+        ITextComponent ownerNameLocal = new StringTextComponent(netPlayerInfo != null ? netPlayerInfo.getProfile().getName() : "-offline-").withStyle(TextFormatting.ITALIC);
+        int nameWidth = this.font.width(ownerNameLocal);
         this.font.draw(matrixStack, SheetMusicHelper.formatDuration(menu.getDuration()), imageWidth - durationWidth - 12F, 6, 4210752);
         this.font.draw(matrixStack, menu.getName(), 12, 6, 4210752);
         this.font.draw(matrixStack, this.inventory.getDisplayName(), 12, 91, 4210752);
-        this.font.draw(matrixStack, ownerName, imageWidth - nameWidth - 12F, 91, 4210752);
+        this.font.draw(matrixStack, ownerNameLocal, imageWidth - nameWidth - 12F, 91, 4210752);
     }
 }

@@ -8,6 +8,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 public class CommandMusic
 {
+    private CommandMusic() { /* NOOP */}
+
     static ArgumentBuilder<CommandSource, ?> register()
     {
         return Commands.literal("music")

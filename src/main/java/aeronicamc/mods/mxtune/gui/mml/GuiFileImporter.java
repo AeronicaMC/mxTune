@@ -42,6 +42,7 @@ public class GuiFileImporter extends MXScreen
 
         Button button;
         protected int compare(String name1, String name2){ return 0; }
+
         @Override
         public int compare(PathList.Entry o1, PathList.Entry o2) {
             String name1 = StringUtils.toLowerCase(o1.getPath().getFileName().toString());
@@ -155,11 +156,14 @@ public class GuiFileImporter extends MXScreen
         int buttonWidth = 75;
         int x = left;
 
-        addButton(SortType.NORMAL.button = new Button(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.NORMAL.getButtonText(), b -> resortFiles(SortType.NORMAL)));
+        SortType.NORMAL.button = new Button(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.NORMAL.getButtonText(), b -> resortFiles(SortType.NORMAL));
+        addButton(SortType.NORMAL.button);
         x += buttonWidth + buttonMargin;
-        addButton(SortType.A_TO_Z.button = new Button(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.A_TO_Z.getButtonText(), b -> resortFiles(SortType.A_TO_Z)));
+        SortType.A_TO_Z.button = new Button(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.A_TO_Z.getButtonText(), b -> resortFiles(SortType.A_TO_Z));
+        addButton(SortType.A_TO_Z.button);
         x += buttonWidth + buttonMargin;
-        addButton(SortType.Z_TO_A.button = new Button(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.Z_TO_A.getButtonText(), b -> resortFiles(SortType.Z_TO_A)));
+        SortType.Z_TO_A.button = new Button(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.Z_TO_A.getButtonText(), b -> resortFiles(SortType.Z_TO_A));
+        addButton(SortType.Z_TO_A.button);
 
         int buttonTop = height - 25;
         int xOpen = (this.width /2) - 75 * 2;
@@ -289,7 +293,7 @@ public class GuiFileImporter extends MXScreen
 
     private void cancelDone()
     {
-        // TODO: Action
+        // Future Actions on dialog close confirmation
         onClose();
     }
 

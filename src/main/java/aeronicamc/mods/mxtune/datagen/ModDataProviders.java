@@ -19,6 +19,8 @@ import static net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Bus.MOD)
 public class ModDataProviders
 {
+    private ModDataProviders() { /* NOOP */}
+    
     @SubscribeEvent
     public static void registerDataProviders(final GatherDataEvent event)
     {

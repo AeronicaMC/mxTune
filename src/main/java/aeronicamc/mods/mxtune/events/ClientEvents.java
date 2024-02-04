@@ -10,13 +10,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
 public class ClientEvents
 {
-    private static final Logger LOGGER = LogManager.getLogger(ClientEvents.class);
+    private ClientEvents() { /* NOOP */ }
 
     @SubscribeEvent
     public static void event(ClientPlayerNetworkEvent.LoggedInEvent event)

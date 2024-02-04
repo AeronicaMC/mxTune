@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.datagen.crafting.recipe;
 
+import aeronicamc.mods.mxtune.util.MXTuneRuntimeException;
 import aeronicamc.mods.mxtune.util.RegistryUtil;
 import com.google.common.base.Preconditions;
 import net.minecraft.advancements.Advancement;
@@ -183,8 +184,8 @@ public class EnhancedShapedRecipeBuilder<
 
             String itemGroupName = itemGroup;
             if (itemGroupName == null) {
-                final ItemGroup itemGroup = Preconditions.checkNotNull(result.getItem().getItemCategory());
-                itemGroupName = itemGroup.getRecipeFolderName();
+                final ItemGroup itemGroupTemp = Preconditions.checkNotNull(result.getItem().getItemCategory());
+                itemGroupName = itemGroupTemp.getRecipeFolderName();
             }
 
             final ResourceLocation advancementID = new ResourceLocation(id.getNamespace(), "recipes/" + itemGroupName + "/" + id.getPath());
@@ -193,7 +194,7 @@ public class EnhancedShapedRecipeBuilder<
 
             consumer.accept(new SimpleFinishedRecipe(baseRecipe, result, serializer));
         } catch (final IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("Failed to build Enhanced Shaped Recipe " + id, e);
+            throw new MXTuneRuntimeException("Failed to build Enhanced Shaped Recipe " + id, e);
         }
     }
 

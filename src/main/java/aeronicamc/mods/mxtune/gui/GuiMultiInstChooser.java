@@ -20,9 +20,9 @@ import java.util.Optional;
 
 public class GuiMultiInstChooser extends Screen
 {
-    private final static ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/multi_inst_chooser.png");
-    private final static int IMAGE_WIDTH = 256;
-    private final static int IMAGE_HEIGHT = 165;
+    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/multi_inst_chooser.png");
+    private static final int IMAGE_WIDTH = 256;
+    private static final int IMAGE_HEIGHT = 165;
     private int guiLeft;
     private int guiTop;
     private final Screen parent;
@@ -56,13 +56,13 @@ public class GuiMultiInstChooser extends Screen
         int posX = (widget.getRight() + (guiLeft + IMAGE_WIDTH - widget.getRight())/2) - widthButtons/2;
         int posY = guiTop + IMAGE_HEIGHT - 20 - 15;
 
-        this.addButton(new Button(posX, posY, widthButtons, 20, new TranslationTextComponent("gui.done"), (done) -> {
+        this.addButton(new Button(posX, posY, widthButtons, 20, new TranslationTextComponent("gui.done"), done -> {
             selectCallback(Objects.requireNonNull(widget.getSelected()), false);
             onClose();
         }));
     }
 
-    private void selectCallback(SoundFontList.Entry selected, Boolean doubleClicked)
+    private void selectCallback(SoundFontList.Entry selected, boolean doubleClicked)
     {
         getPlayer(Objects.requireNonNull(minecraft))
                 .ifPresent(player-> ((MultiInstScreen)parent).updateButton(selected.getIndex()));

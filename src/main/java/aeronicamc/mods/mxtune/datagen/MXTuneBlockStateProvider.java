@@ -13,13 +13,9 @@ import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class MXTuneBlockStateProvider extends BlockStateProvider
 {
-    private static final Logger LOGGER = LogManager.getLogger();
-
     public MXTuneBlockStateProvider(DataGenerator gen, ExistingFileHelper exFileHelper)
     {
         super(gen, Reference.MOD_ID, exFileHelper);
@@ -29,6 +25,7 @@ public class MXTuneBlockStateProvider extends BlockStateProvider
         return Preconditions.checkNotNull(block.getRegistryName(), "Block %s has a null registry name", block);
     }
 
+    @SuppressWarnings("unused")
     private void simpleBlockItem(Block block)
     {
         simpleBlockItem(block, models().getExistingFile(registryName(block)));

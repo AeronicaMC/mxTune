@@ -356,6 +356,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
      * @param identifier the unique block id
      * @param text of the command
      */
+    @SuppressWarnings("unused")
     private void addBlock(String identifier, String text)
     {
         add(String.format("block.%s.%s", Reference.MOD_ID, identifier), text);

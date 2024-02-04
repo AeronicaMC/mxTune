@@ -22,16 +22,16 @@ import java.util.Objects;
 
 public class GuiPin extends MXScreen
 {
-    private final static int RETURN = 0x23CE; // Return Symbol
-    private final static int DEL = 0x2421; // DEL Symbol For Delete
-    private final static int BS = 0x2408; // BS Symbol For Backspace
+    private static final int RETURN = 0x23CE; // Return Symbol
+    private static final int DEL = 0x2421; // DEL Symbol For Delete
+    private static final int BS = 0x2408; // BS Symbol For Backspace
 
-    private final static int[] keys = {GLFW.GLFW_KEY_1, GLFW.GLFW_KEY_2, GLFW.GLFW_KEY_3,
+    private static final int[] keys = {GLFW.GLFW_KEY_1, GLFW.GLFW_KEY_2, GLFW.GLFW_KEY_3,
                                        GLFW.GLFW_KEY_4, GLFW.GLFW_KEY_5, GLFW.GLFW_KEY_6,
                                        GLFW.GLFW_KEY_7, GLFW.GLFW_KEY_8, GLFW.GLFW_KEY_9,
                                        DEL, GLFW.GLFW_KEY_0, RETURN
     };
-    private final static int[][] numPadLayout = {{0,0}, {1,0}, {2,0},
+    private static final int[][] numPadLayout = {{0,0}, {1,0}, {2,0},
                                                  {0,1}, {1,1}, {2,1},
                                                  {0,2}, {1,2}, {2,2},
                                                  {0,3}, {1,3}, {2,3}};

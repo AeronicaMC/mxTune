@@ -8,8 +8,6 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MusicVenues implements IMusicVenues
 {
-    private static final Logger LOGGER = LogManager.getLogger(MusicVenues.class);
     private World level;
     private final List<MusicVenue> venueList = new CopyOnWriteArrayList<>();
 
@@ -70,10 +67,10 @@ public class MusicVenues implements IMusicVenues
 
     public void sync()
     {
-        getLevel().ifPresent(level -> {
-            if (!level.isClientSide())
+        getLevel().ifPresent(world -> {
+            if (!world.isClientSide())
             {
-                PacketDispatcher.sendToDimension(new MusicVenueSyncMessage(serializeNBT()), level.dimension());
+                PacketDispatcher.sendToDimension(new MusicVenueSyncMessage(serializeNBT()), world.dimension());
             }
         });
     }

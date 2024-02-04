@@ -122,7 +122,7 @@ public class RootedEntity extends Entity {
             double blockHeight = !voxelShape.isEmpty() ? voxelShape.bounds().maxY : 0;
 
             List<RootedEntity> rootedEntities = world.getEntitiesOfClass(RootedEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
-            if (rootedEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty())))) {
+            if (rootedEntities.isEmpty() && !(blockStateBelowFoot.getBlock() instanceof AirBlock || !blockStateBelowFoot.getFluidState().isEmpty())) {
                 double ridingOffset = shouldSit ? -1 * 0.0625D : playerIn.getMyRidingOffset();
                 RootedEntity stand = new RootedEntity(world, blockUnderFoot(playerIn), shouldSit);
                 world.addFreshEntity(stand);

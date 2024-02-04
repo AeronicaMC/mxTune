@@ -5,20 +5,14 @@ import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.SoundDefinitionsProvider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 
 public class MXTuneSoundDefinitionsProvider extends SoundDefinitionsProvider
 {
-    private static final Logger LOGGER = LogManager.getLogger();
-    private final ExistingFileHelper helper;
-
     public MXTuneSoundDefinitionsProvider(DataGenerator generator, ExistingFileHelper helper)
     {
         super(generator, Reference.MOD_ID, helper);
-        this.helper = helper;
     }
 
     @Nonnull
