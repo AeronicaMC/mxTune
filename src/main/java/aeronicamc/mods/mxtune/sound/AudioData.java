@@ -36,8 +36,8 @@ import java.util.Objects;
 
 import static aeronicamc.mods.mxtune.util.SheetMusicHelper.formatDuration;
 
-
-public class AudioData implements Cloneable
+@SuppressWarnings("unused")
+public class AudioData
 {
     private final Minecraft mc = Minecraft.getInstance();
     private static final Vector3d MAX_VECTOR3D = new Vector3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
@@ -46,8 +46,6 @@ public class AudioData implements Cloneable
     private AudioFormat audioFormat;
     private ISound iSound;
     private ClientAudio.Status status;
-
-    private long processTimeMS;
     private final int durationSeconds;
     private final int removalSeconds;
     private final int playId;
@@ -68,19 +66,18 @@ public class AudioData implements Cloneable
 
     /**
      * All the data needed to generate and manage the audio stream except the musicText which is passed to the parser only.
+     *
      * @param durationSeconds length of tune (includes four seconds buffer to account for decaying audio).
-     * @param secondsElapsed in the audio stream.
-     * @param processTimeMS in milliseconds for server packet to reach the client.
-     * @param playId for this stream.
-     * @param entityId of the audio source.
-     * @param isClientPlayer the audio source. Used stereo vs 3D audio selection.
-     * @param callback is optional and is used to notify a class that implements the {@link IAudioStatusCallback}
+     * @param secondsElapsed  in the audio stream.
+     * @param playId          for this stream.
+     * @param entityId        of the audio source.
+     * @param isClientPlayer  the audio source. Used stereo vs 3D audio selection.
+     * @param callback        is optional and is used to notify a class that implements the {@link IAudioStatusCallback}
      */
-    AudioData(int durationSeconds, int secondsElapsed, long processTimeMS, int playId, int entityId, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
+    AudioData(int durationSeconds, int secondsElapsed, int playId, int entityId, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
     {
         this.durationSeconds = durationSeconds;
         this.removalSeconds = durationSeconds + 4;
-        this.processTimeMS = 0; //processTimeMS;
         this.secondsElapsed = secondsElapsed;
         this.playId = playId;
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
@@ -90,23 +87,6 @@ public class AudioData implements Cloneable
         this.audioFormat = (isClientPlayer || inVenue) ? ClientAudio.AUDIO_FORMAT_STEREO : ClientAudio.AUDIO_FORMAT_3D;
         this.status = ClientAudio.Status.YIELD;
         this.callback = callback;
-    }
-
-    void addProcessTimeMS(long ms)
-    {
-        // processTimeMS += ms;
-    }
-
-    void setProcessTimeMS(long ms)
-    {
-        // processTimeMS = ms;
-    }
-
-    int applyProcessTimeToElapsedTime()
-    {
-        // secondsElapsed += Math.round((float) processTimeMS / 1000.0);
-        processTimeMS = 0;
-        return secondsElapsed;
     }
 
     synchronized AudioFormat getAudioFormat()
@@ -142,7 +122,7 @@ public class AudioData implements Cloneable
 
     synchronized int getSecondsElapsed()
     {
-        return applyProcessTimeToElapsedTime();
+        return secondsElapsed;
     }
 
     void tick()
@@ -228,9 +208,9 @@ public class AudioData implements Cloneable
 
     /**
      * Start a fade-in or fade-out. Fade-in is set true only in the {@link PCMAudioStream} notifyOnInputStreamAvailable() method.
-     * @param seconds   duration of the fade in seconds. 5 MAX.
-     * @param fadeIn    set true for fade-in mode.
-     * @param stop
+     * @param seconds duration of the fade in seconds. 5 MAX.
+     * @param fadeIn set true for fade-in mode.
+     * @param stop set true to stop
      */
     void startFadeInOut(int seconds, boolean fadeIn, boolean stop)
     {
@@ -284,12 +264,12 @@ public class AudioData implements Cloneable
     {
         if (!this.dead && status.equals(ClientAudio.Status.YIELD))
         {
-            AudioData clone = (AudioData) this.clone();
-            clone.setStatus(ClientAudio.Status.WAITING);
+            AudioData copy = this.copy();
+            copy.setStatus(ClientAudio.Status.WAITING);
             this.dead = true;
             this.startFadeInOut(1, false, true);
-            ActiveAudio.addEntry(clone);
-            ClientAudio.submitAudioData(clone);
+            ActiveAudio.addEntry(copy);
+            ClientAudio.submitAudioData(copy);
         }
     }
 
@@ -335,7 +315,6 @@ public class AudioData implements Cloneable
                 .append("isClientPlayer", isClientPlayer)
                 .append("entityId", entityId)
                 .append("playId", playId)
-                .append("secondsToSkip", processTimeMS)
                 .append("secondsElapsed", secondsElapsed)
                 .append("durationSeconds", durationSeconds)
                 .append("removalSeconds", removalSeconds)
@@ -346,80 +325,14 @@ public class AudioData implements Cloneable
 
     public ITextComponent getInfo()
     {
-        String name = mc.level != null && mc.level.getEntity(entityId) != null ? mc.level.getEntity(entityId).getName().getString() : "[*ERROR*]";
+        String name = mc.level != null && mc.level.getEntity(entityId) != null ? Objects.requireNonNull(mc.level.getEntity(entityId)).getName().getString() : "[*ERROR*]";
         return new StringTextComponent(
                 String.format("[%s] %s, E:%06d, P:%06d, T:%04d, RD:%s PCT:%01.2f, dist:%05.2f",
                               status, name, entityId, playId, secondsElapsed, formatDuration(getRemainingDuration()), getProgress(), getDistanceTo())).withStyle(TextFormatting.WHITE);
     }
 
-    /**
-     * Creates and returns a copy of this object.  The precise meaning
-     * of "copy" may depend on the class of the object. The general
-     * intent is that, for any object {@code x}, the expression:
-     * <blockquote>
-     * <pre>
-     * x.clone() != x</pre></blockquote>
-     * will be true, and that the expression:
-     * <blockquote>
-     * <pre>
-     * x.clone().getClass() == x.getClass()</pre></blockquote>
-     * will be {@code true}, but these are not absolute requirements.
-     * While it is typically the case that:
-     * <blockquote>
-     * <pre>
-     * x.clone().equals(x)</pre></blockquote>
-     * will be {@code true}, this is not an absolute requirement.
-     * <p>
-     * By convention, the returned object should be obtained by calling
-     * {@code super.clone}.  If a class and all of its superclasses (except
-     * {@code Object}) obey this convention, it will be the case that
-     * {@code x.clone().getClass() == x.getClass()}.
-     * <p>
-     * By convention, the object returned by this method should be independent
-     * of this object (which is being cloned).  To achieve this independence,
-     * it may be necessary to modify one or more fields of the object returned
-     * by {@code super.clone} before returning it.  Typically, this means
-     * copying any mutable objects that comprise the internal "deep structure"
-     * of the object being cloned and replacing the references to these
-     * objects with references to the copies.  If a class contains only
-     * primitive fields or references to immutable objects, then it is usually
-     * the case that no fields in the object returned by {@code super.clone}
-     * need to be modified.
-     * <p>
-     * The method {@code clone} for class {@code Object} performs a
-     * specific cloning operation. First, if the class of this object does
-     * not implement the interface {@code Cloneable}, then a
-     * {@code CloneNotSupportedException} is thrown. Note that all arrays
-     * are considered to implement the interface {@code Cloneable} and that
-     * the return type of the {@code clone} method of an array type {@code T[]}
-     * is {@code T[]} where T is any reference or primitive type.
-     * Otherwise, this method creates a new instance of the class of this
-     * object and initializes all its fields with exactly the contents of
-     * the corresponding fields of this object, as if by assignment; the
-     * contents of the fields are not themselves cloned. Thus, this method
-     * performs a "shallow copy" of this object, not a "deep copy" operation.
-     * <p>
-     * The class {@code Object} does not itself implement the interface
-     * {@code Cloneable}, so calling the {@code clone} method on an object
-     * whose class is {@code Object} will result in throwing an
-     * exception at run time.
-     *
-     * @return a clone of this instance.
-     * @throws CloneNotSupportedException if the object's class does not
-     *                                    support the {@code Cloneable} interface. Subclasses
-     *                                    that override the {@code clone} method can also
-     *                                    throw this exception to indicate that an instance cannot
-     *                                    be cloned.
-     * @see Cloneable
-     */
-    @Override
-    protected Object clone()
+    public AudioData copy()
     {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e)
-        {
-            return new AudioData(this.durationSeconds, this.secondsElapsed, this.processTimeMS, this.getPlayId(), this.getEntityId(), this.isClientPlayer, this.callback);
-        }
+        return new AudioData(this.durationSeconds, this.secondsElapsed, this.getPlayId(), this.getEntityId(), this.isClientPlayer, this.callback);
     }
 }

@@ -38,7 +38,7 @@ import java.util.Map;
  * <Li>removed the JFugue specific pattern signature methods.</Li>
  * <Li>Added an option to skip forward N seconds of audio.</Li>
  * <P>Skip forward in the send method instead!</P>
- * <P>Deprecated ref: {@link <A="https://stackoverflow.com/questions/52595473/java-start-audio-playback-at-x-position">Java: Start Audio Playback at X Position</A></P>}
+ * <P>Deprecated ref: {@see <a href="https://stackoverflow.com/questions/52595473/java-start-audio-playback-at-x-position">Java: Start Audio Playback at X Position</a>}</p>
  */
 @SuppressWarnings("restriction")
 public class Midi2WavRenderer implements Receiver
@@ -69,7 +69,7 @@ public class Midi2WavRenderer implements Receiver
         
         Map<String, Object> p = new HashMap<>();
         p.put("interpolation", "sinc");
-        p.put("max polyphony", "1024");
+        p.put("max polyphony", "1024"); // Black MIDI
         AudioInputStream outputStream = audioSynthesizer.openStream(audioData.getAudioFormat(), p);
 
         Soundbank defaultSoundBank = audioSynthesizer.getDefaultSoundbank();
@@ -88,7 +88,6 @@ public class Midi2WavRenderer implements Receiver
 
         receiver.close();
         timer.stop();
-        audioData.setProcessTimeMS(timer.getTimeElapsed());
         return outputStream;
     }
 
@@ -138,7 +137,7 @@ public class Midi2WavRenderer implements Receiver
      * @param receiver  the Receiver of the Sequence
      * @param SkipSeconds Seconds to skip forward
      * @return Total Length in seconds
-     * @throws ModMidiException
+     * @throws ModMidiException for caller to handle
      */
     private double send(@Nullable Sequence seq, @Nullable Receiver receiver, long SkipSeconds) throws ModMidiException
     {
@@ -176,14 +175,14 @@ public class Midi2WavRenderer implements Receiver
             if (selectedEvent == null)
                 throw new ModMidiException("Null MidiEvent in 'send' method: " +seq);
             long tick = selectedEvent.getTick();
-            if ((int)divisionType == (int)Sequence.PPQ)
+            if ((int)divisionType == 0) // Sequence PPQ
                 currentTime += ((tick - lastTick) * mpq) / seqResolution;
             else
                 currentTime = (long) ((tick * 1000000.0 * divisionType) / seqResolution);
             lastTick = tick;
             MidiMessage msg = selectedEvent.getMessage();
             if (msg instanceof MetaMessage) {
-                if ((int)divisionType == (int)Sequence.PPQ)
+                if ((int)divisionType == 0) // Sequence PPQ
                     if (((MetaMessage) msg).getType() == 0x51) {
                         byte[] data = ((MetaMessage) msg).getData();
                         mpq = ((data[0] & 0xff) << 16)
@@ -206,7 +205,7 @@ public class Midi2WavRenderer implements Receiver
                             try
                             {
                                 // All Notes Off
-                                msgLoc.setMessage(ShortMessage.CONTROL_CHANGE, channel, 120 & 0x7F, 0 & 0x7F);
+                                msgLoc.setMessage(ShortMessage.CONTROL_CHANGE, channel, 120 & 0x7F, 0);
                             } catch (InvalidMidiDataException e)
                             {
                                 LOGGER.error("Failed to create All Notes Off message.");

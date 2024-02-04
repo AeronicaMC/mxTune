@@ -20,7 +20,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +40,6 @@ public class ClientAudio
     private static final SoundHandler soundHandler = mc.getSoundManager();
     private static SoundEngine soundEngine;
 
-    private static int counter;
     static int MAX_AUDIO_STREAMS = 3;
     private static final int THREAD_POOL_SIZE = 3;
     /* PCM Signed Monaural little endian */
@@ -133,16 +131,16 @@ public class ClientAudio
 
     /**
      * For players and source entities.
-     * @param duration of the tune in seconds.
+     *
+     * @param duration      of the tune in seconds.
      * @param secondsToSkip seconds to skip forward in the music.
-     * @param processTimeMS time in milliseconds for server packet to reach the client.
-     * @param playID unique submission identifier.
-     * @param entityId the id of the music source.
-     * @param musicText MML string
+     * @param playID        unique submission identifier.
+     * @param entityId      the id of the music source.
+     * @param musicText     MML string
      */
-    public static void play(int duration, int secondsToSkip, long processTimeMS, int playID, int entityId, String musicText)
+    public static void play(int duration, int secondsToSkip, int playID, int entityId, String musicText)
     {
-        play(playID, duration, secondsToSkip, processTimeMS, entityId, musicText, false, null);
+        play(playID, duration, secondsToSkip, entityId, musicText, false, null);
     }
 
     /**
@@ -154,26 +152,26 @@ public class ClientAudio
      */
     public static void playLocal(int duration, int playId, String musicText, @Nullable IAudioStatusCallback callback)
     {
-        play(playId, duration, 0, 0, Objects.requireNonNull(mc.player).getId(), musicText, true, callback);
+        play(playId, duration, 0, Objects.requireNonNull(mc.player).getId(), musicText, true, callback);
     }
 
     /**
      * The all-in-one #play(...) method of the {@link ClientAudio} class.
-     * @param playID The unique server identifier for each music submission. see {@link PlayIdSupplier}
-     * @param duration of the tune in seconds
+     *
+     * @param playID         The unique server identifier for each music submission. see {@link PlayIdSupplier}
+     * @param duration       of the tune in seconds
      * @param secondsElapsed seconds to skip forward in the music.
-     * @param processTimeMS time in milliseconds for server packet to reach the client.
-     * @param entityId The unique entity id of the music source. Generally another player.
-     * @param musicText The MML {@link <A="https://en.wikipedia.org/wiki/MML">MML</A>} to be played
-     * @param isClient if true, the local client player hears their own music in stereo else other players in 3D audio.
-     * @param callback An optional callback that is fired when {@link Status} changes related to {@link AudioData}
+     * @param entityId       The unique entity id of the music source. Generally another player.
+     * @param musicText      The MML to be played. see "<a href="https://en.wikipedia.org/wiki/MML">MML</a>"
+     * @param isClient       if true, the local client player hears their own music in stereo else other players in 3D audio.
+     * @param callback       An optional callback that is fired when {@link Status} changes related to {@link AudioData}
      */
-    private static void play(int playID, int duration, int secondsElapsed, long processTimeMS, int entityId, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
+    private static void play(int playID, int duration, int secondsElapsed, int entityId, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
     {
         if (playID != PlayIdSupplier.INVALID)
         {
             boolean isReallyClient = (((mc.player != null) && (mc.player.getId() == entityId)) || isClient);
-            AudioData audioData = new AudioData(duration, secondsElapsed, processTimeMS, playID, entityId, isReallyClient, callback);
+            AudioData audioData = new AudioData(duration, secondsElapsed, playID, entityId, isReallyClient, callback);
             parseMML(audioData, musicText);
             ActiveAudio.addEntry(audioData);
             Minecraft.getInstance().submitAsync(ClientAudio::prioritizeAndLimitSources);
@@ -319,9 +317,7 @@ public class ClientAudio
     public static void fadeOut(int playID, int seconds)
     {
         if (PlayIdSupplier.INVALID == playID) return;
-        getAudioData(playID).ifPresent(audioData -> {
-            audioData.startFadeInOut(Math.max(seconds, 0), false, true);
-        });
+        getAudioData(playID).ifPresent(audioData -> audioData.startFadeInOut(Math.max(seconds, 0), false, true));
     }
 
     public static void stopAll()
@@ -331,14 +327,6 @@ public class ClientAudio
         {
             soundEngine.stopAll();
         }
-    }
-
-    @SubscribeEvent
-    public static void event(TickEvent.ClientTickEvent event)
-    {
-//        if (event.phase == TickEvent.Phase.END)
-//            if (counter++ % 10 == 0)
-//                prioritizeAndLimitSources();
     }
 
     // called in SoundEngine CTOR* and reload. Reload: i.e. key-press F3+T

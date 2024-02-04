@@ -6,9 +6,6 @@ import aeronicamc.mods.mxtune.sound.ClientAudio;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.function.Supplier;
 
 public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
@@ -62,12 +59,7 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
         if (ctx.get().getDirection().getReceptionSide().isClient())
         {
             ctx.get().enqueueWork(() ->
-                {
-                  LocalDateTime dateTimeClient = LocalDateTime.now(ZoneId.of("GMT0"));
-                  LocalDateTime dateTimeServer = message.secondsElapsed > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
-                  long netTransitTime = Duration.between(dateTimeServer, dateTimeClient).toMillis();
-                  ClientAudio.play(message.duration, message.secondsElapsed, netTransitTime, message.playId, message.entityId, message.musicText);
-                });
+                    ClientAudio.play(message.duration, message.secondsElapsed, message.playId, message.entityId, message.musicText));
         }
         ctx.get().setPacketHandled(true);
     }
