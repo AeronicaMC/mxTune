@@ -20,7 +20,7 @@ public class MusicVenues implements IMusicVenues
 {
     private static final Logger LOGGER = LogManager.getLogger(MusicVenues.class);
     private World level;
-    private final List<MusicVenue> musicVenues = new CopyOnWriteArrayList<>();
+    private final List<MusicVenue> venueList = new CopyOnWriteArrayList<>();
 
     private int someInt;
 
@@ -40,19 +40,19 @@ public class MusicVenues implements IMusicVenues
     @Override
     public void addMusicVenue(MusicVenue musicVenue)
     {
-        musicVenues.add(musicVenue);
+        venueList.add(musicVenue);
     }
 
     @Override
     public boolean removeMusicVenue(MusicVenue musicVenue)
     {
-        return musicVenues.remove(musicVenue);
+        return venueList.remove(musicVenue);
     }
 
     @Override
-    public List<MusicVenue> getMusicVenues()
+    public List<MusicVenue> getVenueList()
     {
-        return musicVenues;
+        return venueList;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class MusicVenues implements IMusicVenues
     {
         final CompoundNBT cNbt = new CompoundNBT();
         ListNBT listnbt = new ListNBT();
-        musicVenues.forEach(stageArea -> NBTDynamicOps.INSTANCE.withEncoder(MusicVenue.CODEC)
+        venueList.forEach(stageArea -> NBTDynamicOps.INSTANCE.withEncoder(MusicVenue.CODEC)
                 .apply(stageArea).result().ifPresent(listnbt::add));
 
         cNbt.put("musicVenues", listnbt);
@@ -98,9 +98,9 @@ public class MusicVenues implements IMusicVenues
         if (cNbt != null && cNbt.contains("musicVenues"))
         {
             ListNBT listnbt = cNbt.getList("musicVenues", Constants.NBT.TAG_COMPOUND);
-            musicVenues.clear();
+            venueList.clear();
             listnbt.forEach(stageAreaNBT -> NBTDynamicOps.INSTANCE.withParser(MusicVenue.CODEC)
-                    .apply(stageAreaNBT).result().ifPresent(musicVenues::add));
+                    .apply(stageAreaNBT).result().ifPresent(venueList::add));
 
             setInt(cNbt.getInt("someInt"));
         }

@@ -16,6 +16,7 @@ public class SpeakerParticle extends SpriteTexturedParticle
     private final float uo;
     private final float vo;
 
+    @SuppressWarnings("deprecation")
     public SpeakerParticle(ClientWorld pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed)
     {
         super(pLevel, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed);

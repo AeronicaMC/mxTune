@@ -55,7 +55,7 @@ public class PacketDispatcher
         registerMessage(SendPinEntryMessage.class, new SendPinEntryMessage());
     }
 
-    private static <MSG extends AbstractMessage<MSG>> void registerMessage(Class<MSG> messageType, AbstractMessage<MSG> message)
+    private static <M extends AbstractMessage<M>> void registerMessage(Class<M> messageType, AbstractMessage<M> message)
     {
         channel.registerMessage(packetId++, messageType, message::encode, message::decode, message::handle);
     }
@@ -64,7 +64,7 @@ public class PacketDispatcher
      * Send this message to the specified player's client-side counterpart. See
      * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
      */
-    public static <MSG extends AbstractMessage<MSG>> void sendTo(MSG message, ServerPlayerEntity player)
+    public static <M extends AbstractMessage<M>> void sendTo(M message, ServerPlayerEntity player)
     {
         channel.send(PacketDistributor.PLAYER.with(()->player), message);
     }
@@ -73,7 +73,7 @@ public class PacketDispatcher
      * Send this message to everyone. See
      * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
      */
-    public static <MSG extends AbstractMessage<MSG>> void sendToAll(MSG message)
+    public static <M extends AbstractMessage<M>> void sendToAll(M message)
     {
         channel.send(PacketDistributor.ALL.noArg(), message);
     }
@@ -82,7 +82,7 @@ public class PacketDispatcher
      * Send this message to everyone within a certain range of a point. See
      * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
      */
-    public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, PacketDistributor.TargetPoint point)
+    public static <M extends AbstractMessage<M>> void sendToAllAround(M message, PacketDistributor.TargetPoint point)
     {
         channel.send(PacketDistributor.NEAR.with(()->point), message);
     }
@@ -90,9 +90,9 @@ public class PacketDispatcher
     /**
      * Sends a message to everyone within a certain range of the coordinates in
      * the same dimension. Shortcut to
-     * {@link PacketDispatcher#sendToAllAround(MSG, PacketDistributor.TargetPoint)}
+     * {@link PacketDispatcher#sendToAllAround(M, PacketDistributor.TargetPoint)}
      */
-    public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, RegistryKey<World> dimension, double x, double y, double z, double range)
+    public static <M extends AbstractMessage<M>> void sendToAllAround(M message, RegistryKey<World> dimension, double x, double y, double z, double range)
     {
         sendToAllAround(message, new PacketDistributor.TargetPoint(x, y, z, range, dimension));
     }
@@ -100,7 +100,7 @@ public class PacketDispatcher
     /**
      * Sends a message to everyone within a certain range of the player
      */
-    public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, PlayerEntity player, double range)
+    public static <M extends AbstractMessage<M>> void sendToAllAround(M message, PlayerEntity player, double range)
     {
         sendToAllAround(message, player.getCommandSenderWorld().dimension(), player.blockPosition().getX(), player.blockPosition().getY(), player.blockPosition().getY(), range);
     }
@@ -112,7 +112,7 @@ public class PacketDispatcher
      * @param blockPos the position in the world to
      * @param range around the position
      */
-    public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, RegistryKey<World> dimension, BlockPos blockPos, double range)
+    public static <M extends AbstractMessage<M>> void sendToAllAround(M message, RegistryKey<World> dimension, BlockPos blockPos, double range)
     {
         sendToAllAround(message, dimension, blockPos.getX(), blockPos.getY(), blockPos.getY(), range);
     }
@@ -121,7 +121,7 @@ public class PacketDispatcher
      * Send this message to everyone within the supplied dimension. See
      * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
      */
-    public static <MSG extends AbstractMessage<MSG>> void sendToDimension(MSG message, RegistryKey<World> dimension)
+    public static <M extends AbstractMessage<M>> void sendToDimension(M message, RegistryKey<World> dimension)
     {
         channel.send(PacketDistributor.DIMENSION.with(()->dimension), message);
     }
@@ -132,7 +132,7 @@ public class PacketDispatcher
      * @param message custom message
      * @param entity the tracking entity
      */
-    public static <MSG extends AbstractMessage<MSG>> void sendToTrackingEntity(MSG message, Entity entity)
+    public static <M extends AbstractMessage<M>> void sendToTrackingEntity(M message, Entity entity)
     {
         channel.send(PacketDistributor.TRACKING_ENTITY.with(()->entity), message);
     }
@@ -144,7 +144,7 @@ public class PacketDispatcher
      * @param entity the tracking entity
      * <a href="https://forums.minecraftforge.net/topic/103538-solved116-how-to-sync-other-players-capability-and-update-it-in-own-client/?tab=comments#comment-464260">...</a>
      */
-    public static <MSG extends AbstractMessage<MSG>> void sendToTrackingEntityAndSelf(MSG message, Entity entity)
+    public static <M extends AbstractMessage<M>> void sendToTrackingEntityAndSelf(M message, Entity entity)
     {
         channel.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(()->entity), message);
     }
@@ -153,7 +153,7 @@ public class PacketDispatcher
      * Send this message to the server. See
      * {@link SimpleChannel#sendToServer(Object)}
      */
-    public static <MSG extends AbstractMessage<MSG>> void sendToServer(MSG message)
+    public static <M extends AbstractMessage<M>> void sendToServer(M message)
     {
         channel.sendToServer(message);
     }

@@ -25,9 +25,9 @@ public class MXTextFieldWidget extends TextFieldWidget implements ILayout
     }
 
     @SuppressWarnings("unused")
-    public MXTextFieldWidget(FontRenderer pFont, int pX, int pY, int pWidth, int pHeight, @Nullable TextFieldWidget p_i232259_6_, ITextComponent pMessage)
+    public MXTextFieldWidget(FontRenderer pFont, int pX, int pY, int pWidth, int pHeight, @Nullable TextFieldWidget textFieldWidget, ITextComponent pMessage)
     {
-        super(pFont, pX, pY, pWidth, pHeight, p_i232259_6_, pMessage);
+        super(pFont, pX, pY, pWidth, pHeight, textFieldWidget, pMessage);
     }
 
     @Override

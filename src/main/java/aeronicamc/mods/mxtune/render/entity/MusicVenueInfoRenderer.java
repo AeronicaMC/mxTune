@@ -60,9 +60,9 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
      * Copied from the vanilla Painting Renderer and modified to use a dynamic texture.
      */
     private void renderInfoPanel(MatrixStack matrixStack, IRenderTypeBuffer pBuffer, MusicVenueInfoEntity venueInfoEntity, int width, int height, TextureAtlasSprite backSprite) {
-        MatrixStack.Entry matrixStack$entry = matrixStack.last();
-        Matrix4f matrix4f = matrixStack$entry.pose();
-        Matrix3f matrix3f = matrixStack$entry.normal();
+        MatrixStack.Entry matrixStackEntry = matrixStack.last();
+        Matrix4f matrix4f = matrixStackEntry.pose();
+        Matrix3f matrix3f = matrixStackEntry.normal();
         float f = (-width) / 2.0F;
         float f1 = (-height) / 2.0F;
         float f2 = 0.5F;
@@ -171,12 +171,12 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
         matrixStack.popPose();
     }
 
-    private void vertex(Matrix4f matrix4f$pose, Matrix3f matrix3f$normal, IVertexBuilder vertexBuilder, float pPoseX, float pPoseY, float pU, float pV, float pPoseZ, int pNormalX, int pNormalY, int pNormalZ, int pLightMap) {
-        vertexBuilder.vertex(matrix4f$pose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightMap).normal(matrix3f$normal, pNormalX, pNormalY, pNormalZ).endVertex();
+    private void vertex(Matrix4f matrix4fPose, Matrix3f matrix3fNormal, IVertexBuilder vertexBuilder, float pPoseX, float pPoseY, float pU, float pV, float pPoseZ, int pNormalX, int pNormalY, int pNormalZ, int pLightMap) {
+        vertexBuilder.vertex(matrix4fPose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightMap).normal(matrix3fNormal, pNormalX, pNormalY, pNormalZ).endVertex();
     }
 
-    private void vertexInfo(Matrix4f matrix4f$pose, Matrix3f matrix3f$normal, IVertexBuilder vertexBuilder, float pPoseX, float pPoseY, float pU, float pV, float pPoseZ, int pNormalX, int pNormalY, int pNormalZ, int pLightMap) {
-        vertexBuilder.vertex(matrix4f$pose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).uv2(pLightMap).normal(matrix3f$normal, pNormalX, pNormalY, pNormalZ).endVertex();
+    private void vertexInfo(Matrix4f matrix4fPose, Matrix3f matrix3fNormal, IVertexBuilder vertexBuilder, float pPoseX, float pPoseY, float pU, float pV, float pPoseZ, int pNormalX, int pNormalY, int pNormalZ, int pLightMap) {
+        vertexBuilder.vertex(matrix4fPose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).uv2(pLightMap).normal(matrix3fNormal, pNormalX, pNormalY, pNormalZ).endVertex();
     }
 
     private void dummyPress() {}

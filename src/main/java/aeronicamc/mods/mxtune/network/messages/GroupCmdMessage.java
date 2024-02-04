@@ -20,7 +20,7 @@ public class GroupCmdMessage extends AbstractMessage<GroupCmdMessage>
     public GroupCmdMessage()
     {
         pin = "0000";
-        cmd = Cmd.Nil;
+        cmd = Cmd.NIL;
         taggedMemberId = 0;
     }
 
@@ -70,6 +70,6 @@ public class GroupCmdMessage extends AbstractMessage<GroupCmdMessage>
 
     public enum Cmd
     {
-        Nil, CreateGroup, CloseGui, Disband, Pin, ModePin, ModeOpen, NewPin, Promote, Remove
+        NIL, CREATE_GROUP, CLOSE_GUI, DISBAND, PIN, MODE_PIN, MODE_OPEN, NEW_PIN, PROMOTE, REMOVE
     }
 }

@@ -82,10 +82,10 @@ public class GroupClient
 
     public static void setPrivatePin(String pin, Cmd cmd)
     {
-        if (Cmd.Pin.equals(cmd)) {
+        if (Cmd.PIN.equals(cmd)) {
             privatePin = pin;
             callback.onGroupClientChanged(Type.Pin);
-        } else if (Cmd.CloseGui.equals(cmd))
+        } else if (Cmd.CLOSE_GUI.equals(cmd))
             callback.onGroupClientChanged(Type.Close);
     }
 

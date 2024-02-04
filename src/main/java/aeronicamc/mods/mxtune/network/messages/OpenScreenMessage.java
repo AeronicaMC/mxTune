@@ -41,7 +41,7 @@ public class OpenScreenMessage extends AbstractMessage<OpenScreenMessage>
                     switch (message.screen)
                     {
                         case GROUP_OPEN:
-                            Handler.OpenGuiGroupScreen();
+                            Handler.openGuiGroupScreen();
                             break;
                         case TEST_ONE:
                             Handler.openTestScreen();

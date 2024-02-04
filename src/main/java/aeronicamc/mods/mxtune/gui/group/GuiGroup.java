@@ -35,8 +35,8 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     private static final ITextComponent DISBAND = new TranslationTextComponent("gui.mxtune.button.disband");
     private static final ITextComponent LABEL_PIN = new TranslationTextComponent("gui.mxtune.label.pin");
     private static final ITextComponent LABEL_MODE = new TranslationTextComponent("gui.mxtune.label.mode");
-    private static final ITextComponent PIN = new TranslationTextComponent(Group.Mode.Pin.getModeKey()).withStyle(TextFormatting.YELLOW);
-    private static final ITextComponent OPEN = new TranslationTextComponent(Group.Mode.Open.getModeKey()).withStyle(TextFormatting.GREEN);
+    private static final ITextComponent PIN = new TranslationTextComponent(Group.Mode.PIN.getModeKey()).withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent OPEN = new TranslationTextComponent(Group.Mode.OPEN.getModeKey()).withStyle(TextFormatting.GREEN);
     private static final ITextComponent PIN_HELP01 = new TranslationTextComponent("gui.mxtune.button.new_pin.help01").withStyle(TextFormatting.GREEN);
     private static final ITextComponent PIN_HELP02 = new TranslationTextComponent("gui.mxtune.button.new_pin.help02").withStyle(TextFormatting.YELLOW);
     private static final ITextComponent MAKE_GROUP_HELP01 = new TranslationTextComponent("gui.mxtune.button.make_group.help01").withStyle(TextFormatting.RESET);
@@ -47,7 +47,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     private static final ITextComponent DISBAND_HELP03 = new TranslationTextComponent("gui.mxtune.button.disband.help03").withStyle(TextFormatting.YELLOW);
 
     private static final int PADDING = 4;
-    private Group.Mode groupMode = Group.Mode.Pin;
+    private Group.Mode groupMode = Group.Mode.PIN;
     private final MXButton buttonNewPin = new MXButton(p -> newPin());
     private final MXButton buttonGroupMode = new MXButton(p -> modeToggle());
     private final MXButton buttonDone = new MXButton(p -> done());
@@ -95,7 +95,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         super.init();
         group = GroupClient.getGroup(player().getId());
         groupId = group.getGroupId();
-        PacketDispatcher.sendToServer(new GroupCmdMessage("", Cmd.Pin, player().getId()));
+        PacketDispatcher.sendToServer(new GroupCmdMessage("", Cmd.PIN, player().getId()));
         setMode(GroupClient.getGroupById(groupId).getMode());
         groupDisplay.setCentered(true);
 
@@ -202,27 +202,27 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     private void promote(Button button)
     {
         MXButton mxButton = (MXButton) button;
-        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.Promote, mxButton.getIndex()));
+        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.PROMOTE, mxButton.getIndex()));
     }
 
     private void remove(Button button)
     {
         MXButton mxButton = (MXButton) button;
-        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.Remove, mxButton.getIndex()));
+        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.REMOVE, mxButton.getIndex()));
     }
 
     private void modeToggle()
     {
-        Cmd cmd = Cmd.Nil;
+        Cmd cmd = Cmd.NIL;
         switch (groupMode)
         {
-            case Pin:
-                setMode(Group.Mode.Open);
-                cmd = Cmd.ModeOpen;
+            case PIN:
+                setMode(Group.Mode.OPEN);
+                cmd = Cmd.MODE_OPEN;
                 break;
-            case Open:
-                setMode(Group.Mode.Pin);
-                cmd = Cmd.ModePin;
+            case OPEN:
+                setMode(Group.Mode.PIN);
+                cmd = Cmd.MODE_PIN;
                 break;
         }
         PacketDispatcher.sendToServer(new GroupCmdMessage(null, cmd, player().getId()));
@@ -235,7 +235,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         groupMode = mode;
         buttonGroupMode.setMessage(getGroupModeName(groupMode));
 
-        buttonNewPin.active = mode.equals(Group.Mode.Pin) && player().getId() == group.getLeader();
+        buttonNewPin.active = mode.equals(Group.Mode.PIN) && player().getId() == group.getLeader();
         buttonGroupMode.active = player().getId() == group.getLeader();
         buttonDisband.active = player().getId() == group.getLeader();
     }
@@ -244,7 +244,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     {
         return LABEL_MODE.plainCopy()
                 .append(" ").withStyle(TextFormatting.RESET)
-                .append(mode.equals(Group.Mode.Pin) ? PIN : OPEN);
+                .append(mode.equals(Group.Mode.PIN) ? PIN : OPEN);
     }
 
     private ITextComponent getPinText(String text)
@@ -256,17 +256,17 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
 
     private void makeGroup()
     {
-        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.CreateGroup, player().getId()));
+        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.CREATE_GROUP, player().getId()));
     }
 
     private void newPin()
     {
-        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.NewPin, player().getId()));
+        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.NEW_PIN, player().getId()));
     }
 
     private void disband()
     {
-        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.Disband, player().getId()));
+        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.DISBAND, player().getId()));
         this.onClose();
     }
 
@@ -375,8 +375,8 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
                 if (!GroupClient.isLeader(memberId) && split.inSplit(indexSplit))
                 {
                     MemberInfo memberInfo = new MemberInfo(posX + padding, y + padding, parent, memberId, parent::promote, parent::remove);
-                    parent.addButton(memberInfo.promote);
-                    parent.addButton(memberInfo.remove);
+                    parent.addButton(memberInfo.buttonPromote);
+                    parent.addButton(memberInfo.buttonRemove);
                     memberButtons.add(memberInfo);
                     y += parent.getLineHeight();
                 }
@@ -428,12 +428,12 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         private int leaderFirst(int posX, int y, int memberId)
         {
             MemberInfo memberInfo = new MemberInfo(posX, y, parent, memberId, parent::promote, parent::remove);
-            memberInfo.promote.active = false;
-            memberInfo.promote.visible = false;
-            memberInfo.remove.active = player().getId() == memberId;
-            memberInfo.remove.visible = player().getId() == memberId;
-            parent.addButton(memberInfo.promote);
-            parent.addButton(memberInfo.remove);
+            memberInfo.buttonPromote.active = false;
+            memberInfo.buttonPromote.visible = false;
+            memberInfo.buttonRemove.active = player().getId() == memberId;
+            memberInfo.buttonRemove.visible = player().getId() == memberId;
+            parent.addButton(memberInfo.buttonPromote);
+            parent.addButton(memberInfo.buttonRemove);
             memberButtons.add(memberInfo);
             indexSplit++;
             return y + parent.getLineHeight();
@@ -477,8 +477,8 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
 
         final int xPosMember;
         final int yPosMember;
-        final MXButton promote;
-        final MXButton remove;
+        final MXButton buttonPromote;
+        final MXButton buttonRemove;
         final int memberId;
         final ITextComponent name;
 
@@ -491,25 +491,25 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
             this.memberId = memberId;
             Entity entity = player().level.getEntity(memberId);
             this.name = entity != null ? entity.getDisplayName() : StringTextComponent.EMPTY;
-            promote = new MXButton(pPromote);
-            promote.setMessage(MemberInfo.PROMOTE);
-            promote.setLayout(xPosMember + nameWidth, yPosMember, 20, lineHeight);
-            promote.setIndex(memberId);
-            promote.addHooverText(true, PROMOTE_HELP01);
-            promote.addHooverText(false, PROMOTE_HELP02);
-            promote.addHooverText(false, PROMOTE_HELP03);
-            promote.active = GroupClient.isLeader(player().getId());
-            promote.visible = GroupClient.isLeader(player().getId());
+            buttonPromote = new MXButton(pPromote);
+            buttonPromote.setMessage(MemberInfo.PROMOTE);
+            buttonPromote.setLayout(xPosMember + nameWidth, yPosMember, 20, lineHeight);
+            buttonPromote.setIndex(memberId);
+            buttonPromote.addHooverText(true, PROMOTE_HELP01);
+            buttonPromote.addHooverText(false, PROMOTE_HELP02);
+            buttonPromote.addHooverText(false, PROMOTE_HELP03);
+            buttonPromote.active = GroupClient.isLeader(player().getId());
+            buttonPromote.visible = GroupClient.isLeader(player().getId());
 
-            remove = new MXButton(pRemove);
-            remove.setMessage(MemberInfo.REMOVE);
-            remove.setLayout(promote.x + 20, yPosMember, 20, lineHeight);
-            remove.setIndex(memberId);
-            remove.addHooverText(true, REMOVE_HELP01);
-            remove.addHooverText(false, REMOVE_HELP02);
-            remove.addHooverText(false, REMOVE_HELP03);
-            remove.active = GroupClient.isLeader(player().getId()) || memberId == player().getId();
-            remove.visible = GroupClient.isLeader(player().getId()) || memberId == player().getId();
+            buttonRemove = new MXButton(pRemove);
+            buttonRemove.setMessage(MemberInfo.REMOVE);
+            buttonRemove.setLayout(buttonPromote.x + 20, yPosMember, 20, lineHeight);
+            buttonRemove.setIndex(memberId);
+            buttonRemove.addHooverText(true, REMOVE_HELP01);
+            buttonRemove.addHooverText(false, REMOVE_HELP02);
+            buttonRemove.addHooverText(false, REMOVE_HELP03);
+            buttonRemove.active = GroupClient.isLeader(player().getId()) || memberId == player().getId();
+            buttonRemove.visible = GroupClient.isLeader(player().getId()) || memberId == player().getId();
         }
 
         @SuppressWarnings("unused")

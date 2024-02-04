@@ -181,7 +181,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
     public void render(MatrixStack matrixStack , int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        ModGuiHelper.RenderGuiItemScaled(this.itemRenderer, inventory.getSelected(),
+        ModGuiHelper.renderGuiItemScaled(this.itemRenderer, inventory.getSelected(),
                 getGuiLeft() + 51, getGuiTop() + 50, 2, true);
         this.renderTooltip(matrixStack, mouseX, mouseY);
         ModGuiHelper.drawHooveringHelp(matrixStack, this, children, mouseX, mouseY);

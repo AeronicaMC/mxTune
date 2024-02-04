@@ -30,27 +30,21 @@ public class GuiVSlideSwitch extends MXButton
             Minecraft mc = Minecraft.getInstance();
             mc.getTextureManager().bind(MusicBlockScreen.GUI);
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            Icon guiVSlideSwitch$icon = getIcon();
-            this.blit(pMatrixStack, this.x, this.y, guiVSlideSwitch$icon.getX(), guiVSlideSwitch$icon.getY(), this.width, this.height);
+            Icon icon = getIcon();
+            this.blit(pMatrixStack, this.x, this.y, icon.getX(), icon.getY(), this.width, this.height);
             mc.font.draw(pMatrixStack, getMessage(), this.getRight() + 5F, this.y + (height - mc.font.lineHeight)/2F, -1);
         }
     }
 
     private Icon getIcon() {
-        Icon guiVSlideSwitch$icon;
+        Icon icon;
         if (!this.active)
-        {
-            guiVSlideSwitch$icon = this.onOff ? Icon.ON_DISABLED : Icon.OFF_DISABLED;
-        }
+            icon = this.onOff ? Icon.ON_DISABLED : Icon.OFF_DISABLED;
         else if (this.isHovered())
-        {
-            guiVSlideSwitch$icon = this.onOff ? Icon.ON_HOVER : Icon.OFF_HOVER;
-        }
+            icon = this.onOff ? Icon.ON_HOVER : Icon.OFF_HOVER;
         else
-        {
-            guiVSlideSwitch$icon = this.onOff ? Icon.ON : Icon.OFF;
-        }
-        return guiVSlideSwitch$icon;
+            icon = this.onOff ? Icon.ON : Icon.OFF;
+        return icon;
     }
 
     enum Icon {

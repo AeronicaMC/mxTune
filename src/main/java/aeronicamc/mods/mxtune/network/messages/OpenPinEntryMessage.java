@@ -33,7 +33,7 @@ public class OpenPinEntryMessage extends AbstractMessage<OpenPinEntryMessage>
     public void handle(OpenPinEntryMessage message, Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide().isClient())
-            ctx.get().enqueueWork(() -> Handler.OpenGuiPinScreen(message.groupId));
+            ctx.get().enqueueWork(() -> Handler.openGuiPinScreen(message.groupId));
         ctx.get().setPacketHandled(true);
     }
 }

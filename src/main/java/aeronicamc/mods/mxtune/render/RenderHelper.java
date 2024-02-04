@@ -38,7 +38,7 @@ public class RenderHelper
      * @param pVHeight      V height
      */
     static void blit(MatrixStack pMatrixStack, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
-        AbstractGui.blit(pMatrixStack, pX, pY, RenderEvents.blitOffset, pUOffset, pVOffset, pUWidth, pVHeight, 256, 256);
+        AbstractGui.blit(pMatrixStack, pX, pY, RenderEvents.BLIT_OFFSET, pUOffset, pVOffset, pUWidth, pVHeight, 256, 256);
     }
 
     /**
@@ -72,9 +72,9 @@ public class RenderHelper
      */
     static void renderShape(MatrixStack pMatrixStack, IVertexBuilder pBuffer, VoxelShape pShape, double pX, double pY, double pZ, float pRed, float pGreen, float pBlue, float pAlpha) {
         Matrix4f matrix4f = pMatrixStack.last().pose();
-        pShape.forAllEdges((edgeVertexBegin_X, edgeVertexBegin_Y, edgeVertexBegin_Z, edgeVertexEnd_X, edgeVertexEnd_Y, edgeVertexEnd_Z) -> {
-            pBuffer.vertex(matrix4f, (float)(edgeVertexBegin_X + pX), (float)(edgeVertexBegin_Y + pY), (float)(edgeVertexBegin_Z + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-            pBuffer.vertex(matrix4f, (float)(edgeVertexEnd_X + pX), (float)(edgeVertexEnd_Y + pY), (float)(edgeVertexEnd_Z + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pShape.forAllEdges((edgeVertexBeginX, edgeVertexBeginY, edgeVertexBeginZ, edgeVertexEndX, edgeVertexEndY, edgeVertexEndZ) -> {
+            pBuffer.vertex(matrix4f, (float)(edgeVertexBeginX + pX), (float)(edgeVertexBeginY + pY), (float)(edgeVertexBeginZ + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+            pBuffer.vertex(matrix4f, (float)(edgeVertexEndX + pX), (float)(edgeVertexEndY + pY), (float)(edgeVertexEndZ + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
         });
     }
 
@@ -122,80 +122,43 @@ public class RenderHelper
         renderShape(pMatrixStack, pBuffer, VoxelShapes.create(alignedBB), -pX, -pY, -pZ, pRed, pGreen, pBlue, pAlpha);
     }
 
-    static void renderFaces(MatrixStack pMatrixStack, IVertexBuilder pBuffer, final AxisAlignedBB alignedBB, double camX, double camY, double camZ, float pRed, float pGreen, float pBlue, float pAlpha) {
+    static void renderFaces(MatrixStack pMatrixStack, IVertexBuilder pBuffer, final AxisAlignedBB aaBB, double camX, double camY, double camZ, float pRed, float pGreen, float pBlue, float pAlpha) {
         Matrix4f matrix4f = pMatrixStack.last().pose();
-        AxisAlignedBB box = alignedBB;
         // North inner
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.minY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.minY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
 
         // South inner
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.minY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.minY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
 
         // East inner
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.minY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.minY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
 
         // West inner
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.minY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.minY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
 
         // Bottom inner
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.minY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.minY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.minY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.minY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
 
         // top inner
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-
-//        // North outer
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//
-//        // South outer
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//
-//        // East outer
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//
-//        // West outer
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//
-//        // Bottom outer
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.minY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//
-//        // Top outer
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-//        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.maxX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pBuffer.vertex(matrix4f, (float)(aaBB.minX - camX), (float)(aaBB.maxY - camY), (float)(aaBB.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
     }
 
     /**
@@ -203,7 +166,7 @@ public class RenderHelper
      * @param quaternion of interest
      * @return a quaternion with only the X axis rotation intact
      */
-    static Quaternion GetXAxisRotation(Quaternion quaternion)
+    static Quaternion getXAxisRotation(Quaternion quaternion)
     {
         double a = Math.sqrt((quaternion.r() * quaternion.r()) + (quaternion.i() * quaternion.i()));
         return new Quaternion(quaternion.i(), 0F, 0F, (float) (quaternion.r() / a));
@@ -214,7 +177,7 @@ public class RenderHelper
      * @param quaternion of interest
      * @return a quaternion with only the Y axis rotation intact
      */
-    static Quaternion GetYAxisRotation(Quaternion quaternion)
+    static Quaternion getYAxisRotation(Quaternion quaternion)
     {
         double a = Math.sqrt((quaternion.r() * quaternion.r()) + (quaternion.j() * quaternion.j()));
         return new Quaternion(0F, quaternion.j(),0F, (float) (quaternion.r() / a));
@@ -225,7 +188,7 @@ public class RenderHelper
      * @param quaternion of interest
      * @return a quaternion with only the Z axis rotation intact
      */
-    static Quaternion GetZAxisRotation(Quaternion quaternion)
+    static Quaternion getZAxisRotation(Quaternion quaternion)
     {
         double a = Math.sqrt((quaternion.r() * quaternion.r()) + (quaternion.k() * quaternion.k()));
         return new Quaternion(0F, 0F, quaternion.k(), (float) (quaternion.r() / a));

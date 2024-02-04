@@ -21,8 +21,8 @@ import java.util.Optional;
 public class GuiMultiInstChooser extends Screen
 {
     private final static ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/multi_inst_chooser.png");
-    private final static int imageWidth = 256;
-    private final static int imageHeight = 165;
+    private final static int IMAGE_WIDTH = 256;
+    private final static int IMAGE_HEIGHT = 165;
     private int guiLeft;
     private int guiTop;
     private final Screen parent;
@@ -43,18 +43,18 @@ public class GuiMultiInstChooser extends Screen
         Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
         this.width = pWidth;
         this.height = pHeight;
-        this.guiLeft = (this.width - imageWidth) / 2;
-        this.guiTop = (this.height - imageHeight) / 2;
+        this.guiLeft = (this.width - IMAGE_WIDTH) / 2;
+        this.guiTop = (this.height - IMAGE_HEIGHT) / 2;
 
         int instListWidth;
         instListWidth = Math.min(widget.getSuggestedWidth(), 200);
-        widget.setLayout(guiLeft + 10, guiTop + 10, instListWidth + 1, imageHeight -20);
+        widget.setLayout(guiLeft + 10, guiTop + 10, instListWidth + 1, IMAGE_HEIGHT -20);
         widget.setCallBack(this::selectCallback);
         addWidget(widget);
 
         int widthButtons = 50;
-        int posX = (widget.getRight() + (guiLeft + imageWidth - widget.getRight())/2) - widthButtons/2;
-        int posY = guiTop + imageHeight - 20 - 15;
+        int posX = (widget.getRight() + (guiLeft + IMAGE_WIDTH - widget.getRight())/2) - widthButtons/2;
+        int posY = guiTop + IMAGE_HEIGHT - 20 - 15;
 
         this.addButton(new Button(posX, posY, widthButtons, 20, new TranslationTextComponent("gui.done"), (done) -> {
             selectCallback(Objects.requireNonNull(widget.getSelected()), false);
@@ -113,9 +113,9 @@ public class GuiMultiInstChooser extends Screen
         super.renderBackground(pMatrixStack);
         RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
         Objects.requireNonNull(this.minecraft).getTextureManager().bind(GUI_TEXTURE);
-        int relX = (this.width - imageWidth) / 2;
-        int relY = (this.height - imageHeight) / 2;
-        this.blit(pMatrixStack, relX, relY, 0, 0, imageWidth, imageHeight);
+        int relX = (this.width - IMAGE_WIDTH) / 2;
+        int relY = (this.height - IMAGE_HEIGHT) / 2;
+        this.blit(pMatrixStack, relX, relY, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
     }
 
     @Override
@@ -129,14 +129,14 @@ public class GuiMultiInstChooser extends Screen
 
         // Render labels
         int titleWidth = font.width(this.title);
-        font.draw(pMatrixStack, this.title, (guiLeft+imageWidth) - titleWidth - 10F, guiTop + 4F, TextColorFg.DARK_GRAY);
+        font.draw(pMatrixStack, this.title, (guiLeft+ IMAGE_WIDTH) - titleWidth - 10F, guiTop + 4F, TextColorFg.DARK_GRAY);
 
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
 
         // Render the Instrument GUI image
-        int relX = (widget.getRight() + (guiLeft + imageWidth - widget.getRight())/2);
-        int relY = guiTop + (imageHeight)/3;
+        int relX = (widget.getRight() + (guiLeft + IMAGE_WIDTH - widget.getRight())/2);
+        int relY = guiTop + (IMAGE_HEIGHT)/3;
         ItemStack itemStack = widget.getSelected() != null ? ModItems.getMultiInst(widget.getSelected().getIndex()) : Items.CREEPER_HEAD.getDefaultInstance();
-        ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(), itemStack, relX, relY, 3, true);
+        ModGuiHelper.renderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(), itemStack, relX, relY, 3, true);
     }
 }

@@ -17,7 +17,7 @@ public class MusicVenueHelper
 
         MusicVenueProvider.getMusicVenues(level).ifPresent(
                 areas ->
-                        areas.getMusicVenues().stream()
+                        areas.getVenueList().stream()
                                 .filter(v->v.getVenueAABB()
                                         .contains(entity.getEyePosition(1F)))
                                         .findFirst().ifPresent(area-> activeVenue[0] = area));
@@ -32,7 +32,7 @@ public class MusicVenueHelper
 
         MusicVenueProvider.getMusicVenues(level).ifPresent(
                 areas ->
-                        areas.getMusicVenues().stream()
+                        areas.getVenueList().stream()
                                 .filter(v->v.getVenueAABB().contains(entity.getEyePosition(1F)))
                                 .findFirst().ifPresent(area-> activeVenue[0] = area));
         return new EntityVenueState(!activeVenue[0].equals(MusicVenue.EMPTY), activeVenue[0]);
@@ -46,7 +46,7 @@ public class MusicVenueHelper
 
         MusicVenueProvider.getMusicVenues(level).ifPresent(
                 areas ->
-                        areas.getMusicVenues().stream()
+                        areas.getVenueList().stream()
                                 .filter(v->v.getVenueAABB().contains(entityPos)).
                                 findFirst().ifPresent(area-> activeVenue[0] = area));
         return new EntityVenueState(!activeVenue[0].equals(MusicVenue.EMPTY), activeVenue[0]);

@@ -27,7 +27,7 @@ public class MusicPaperItem extends Item
     {
         if (pLevel.isClientSide)
         {
-            Handler.OpenSheetMusicScreen();
+            Handler.openSheetMusicScreen();
         }
         return ActionResult.pass(pPlayer.getItemInHand(pHand));
     }

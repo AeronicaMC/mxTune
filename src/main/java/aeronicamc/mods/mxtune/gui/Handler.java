@@ -12,17 +12,17 @@ public class Handler
 
     private Handler() { /* NOP */ }
 
-    public static void OpenGuiPinScreen(int groupId)
+    public static void openGuiPinScreen(int groupId)
     {
         mc.tell(() -> mc.setScreen(new GuiPin(groupId)));
     }
 
-    public static void OpenGuiGroupScreen()
+    public static void openGuiGroupScreen()
     {
         mc.tell(() -> mc.setScreen(new GuiGroup()));
     }
 
-    public static void OpenSheetMusicScreen()
+    public static void openSheetMusicScreen()
     {
         mc.tell(() -> mc.setScreen(new GuiMXT(Misc.nonNullInjected())));
     }

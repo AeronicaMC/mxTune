@@ -159,7 +159,7 @@ public class ToolManager
         AxisAlignedBB aabb = new AxisAlignedBB(pos1, pos2).inflate(0.5).move(0.5, 0.5, 0.5);
         boolean[] result = { false };
         MusicVenueProvider.getMusicVenues(context.getLevel()).ifPresent(
-                areas -> result[0] = areas.getMusicVenues()
+                areas -> result[0] = areas.getVenueList()
                         .stream().anyMatch(area -> area.getVenueAABB().intersects(aabb)));
         return result[0];
     }

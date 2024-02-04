@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IMusicVenues
 {
-    List<MusicVenue> getMusicVenues();
+    List<MusicVenue> getVenueList();
 
     void addMusicVenue(MusicVenue musicVenue);
 

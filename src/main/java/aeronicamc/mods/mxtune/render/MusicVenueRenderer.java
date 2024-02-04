@@ -37,7 +37,7 @@ public class MusicVenueRenderer
 
         MusicVenueProvider.getMusicVenues(level).filter(areas -> isToolInHotBar(player)).ifPresent(
                 areas -> {
-                    areas.getMusicVenues().stream().filter(Objects::nonNull)
+                    areas.getVenueList().stream().filter(Objects::nonNull)
                             // Sort areas so the transparency renders properly with regard to each other and the camera.
                             .sorted((o1, o2) -> Double.compare(o2.getVenueAABB().getCenter().distanceToSqr(camera), o1.getVenueAABB().getCenter().distanceToSqr(camera)))
                             .filter(venue -> pClippingHelper.isVisible(venue.getVenueAABB())).forEach(
@@ -48,7 +48,7 @@ public class MusicVenueRenderer
                                     IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(ModRenderType.THICK_LINES);
                                     RenderHelper.renderEdges(pMatrixStack, vertexBuilder2, venue.getVenueAABB().inflate(-0.001D), camX, camY, camZ, venue.getR(), venue.getG(), venue.getB(), 0.4F);
 
-                                    if (!(pActiveRenderInfo.getEntity().distanceToSqr(venue.getVenueAABB().getCenter()) > 512))
+                                    if ((pActiveRenderInfo.getEntity().distanceToSqr(venue.getVenueAABB().getCenter()) <= 512))
                                     {
                                         if (!venue.getName().isEmpty())
                                             RenderHelper.renderFloatingText(venue.getVenueAABB().getCenter(), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent(venue.getName()),

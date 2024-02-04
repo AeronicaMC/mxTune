@@ -29,22 +29,20 @@ public class GuiLockButton extends MXButton
         {
             Minecraft.getInstance().getTextureManager().bind(Button.WIDGETS_LOCATION);
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GuiLockButton.Icon guiLockButton$icon;
-            if (!this.active)
-            {
-                guiLockButton$icon = this.locked ? GuiLockButton.Icon.LOCKED_DISABLED : GuiLockButton.Icon.UNLOCKED_DISABLED;
-            }
-            else if (this.isHovered())
-            {
-                guiLockButton$icon = this.locked ? GuiLockButton.Icon.LOCKED_HOVER : GuiLockButton.Icon.UNLOCKED_HOVER;
-            }
-            else
-            {
-                guiLockButton$icon = this.locked ? GuiLockButton.Icon.LOCKED : GuiLockButton.Icon.UNLOCKED;
-            }
-
-            this.blit(pMatrixStack, this.x, this.y, guiLockButton$icon.getX(), guiLockButton$icon.getY(), this.width, this.height);
+            Icon icon = getIcon();
+            this.blit(pMatrixStack, this.x, this.y, icon.getX(), icon.getY(), this.width, this.height);
         }
+    }
+
+    private Icon getIcon() {
+        Icon icon;
+        if (!this.active)
+            icon = this.locked ? Icon.LOCKED_DISABLED : Icon.UNLOCKED_DISABLED;
+        else if (this.isHovered())
+            icon = this.locked ? Icon.LOCKED_HOVER : Icon.UNLOCKED_HOVER;
+        else
+            icon = this.locked ? Icon.LOCKED : Icon.UNLOCKED;
+        return icon;
     }
 
     enum Icon {

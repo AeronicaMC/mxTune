@@ -66,7 +66,7 @@ public class ModBlocks
     }
 
     @SuppressWarnings("unused")
-    private static boolean never(BlockState p_235436_0_, IBlockReader p_235436_1_, BlockPos p_235436_2_) {
+    private static boolean never(BlockState blockState, IBlockReader blockReader, BlockPos blockPos) {
         return false;
     }
 

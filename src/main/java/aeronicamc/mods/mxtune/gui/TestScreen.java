@@ -116,13 +116,13 @@ public class TestScreen extends Screen
         int relX = ((width - sfpWidget.getRight()) / 5) + sfpWidget.getRight();
         int relY = height/5;
         ItemStack itemStack = sfpWidget.getSelected() != null ? ModItems.getMultiInst(sfpWidget.getSelected().getIndex()) : Items.CREEPER_HEAD.getDefaultInstance();
-        ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(), itemStack, relX, relY, 3, true);
+        ModGuiHelper.renderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(), itemStack, relX, relY, 3, true);
     }
 
     @Override
-    public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_)
+    public boolean keyPressed(int pKeyPressed1, int pKeyPressed2, int pKeyPressed3)
     {
-        return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
+        return super.keyPressed(pKeyPressed1, pKeyPressed2, pKeyPressed3);
     }
 
     @Override

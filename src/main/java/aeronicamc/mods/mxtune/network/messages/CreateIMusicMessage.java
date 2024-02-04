@@ -64,7 +64,7 @@ public class CreateIMusicMessage extends AbstractMessage<CreateIMusicMessage>
             LOGGER.error("unable to decode string", e);
             error = true;
         }
-        final String[] partInstrumentIds = NBT2StringArray(buffer.readNbt());
+        final String[] partInstrumentIds = nbtToStringArray(buffer.readNbt());
         final MusicType musicType = buffer.readEnum(MusicType.class);
         return new CreateIMusicMessage(musicTitle, extraData, musicText != null ? musicText : "", partInstrumentIds, musicType, error);
     }
@@ -129,13 +129,13 @@ public class CreateIMusicMessage extends AbstractMessage<CreateIMusicMessage>
     private static CompoundNBT stringArrayToNBT(String[] strings)
     {
         CompoundNBT nbt = new CompoundNBT();
-        int[] index = new int[1];
+        int[] index = { 0 };
         nbt.putInt("length", strings.length);
         Arrays.stream(strings).sequential().forEach( string -> nbt.putString(String.format("%d", index[0]++), string));
         return nbt;
     }
 
-    private static String[] NBT2StringArray(@Nullable CompoundNBT nbt)
+    private static String[] nbtToStringArray(@Nullable CompoundNBT nbt)
     {
         if (nbt != null)
         {

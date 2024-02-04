@@ -45,9 +45,9 @@ public class WrenchItem extends Item
     }
 
     @Override
-    public boolean is(ITag<Item> p_206844_1_)
+    public boolean is(ITag<Item> itemITag)
     {
-        return super.is(p_206844_1_);
+        return super.is(itemITag);
     }
 
     // For a wrench where we want to use SHIFT-Right-Click to pick up a block this needs to return true.

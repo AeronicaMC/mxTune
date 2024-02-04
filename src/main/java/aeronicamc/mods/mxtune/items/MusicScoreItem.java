@@ -90,7 +90,7 @@ public class MusicScoreItem extends Item implements IMusic
                     GroupManager.addGroup(pPlayer);
                     Group group = GroupManager.getGroup(pPlayer.getId());
                     group.setPin("1234");
-                    group.setMode(Group.Mode.Pin);
+                    group.setMode(Group.Mode.PIN);
                     Entity entity;
                     for (int i = 0; i < 15; i++)
                     {

@@ -33,7 +33,7 @@ import static net.minecraftforge.fml.LogicalSide.CLIENT;
 public class GuiFileImporter extends MXScreen
 {
     private static final Logger LOGGER = LogManager.getLogger(GuiFileImporter.class);
-    private final Object THREAD_SYNC = new Object();
+    private final Object threadSync = new Object();
     private enum SortType implements Comparator<PathList.Entry>
     {
         NORMAL,
@@ -231,7 +231,7 @@ public class GuiFileImporter extends MXScreen
 
     private void reloadFiles()
     {
-        synchronized (THREAD_SYNC)
+        synchronized (threadSync)
         {
             Path path = FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER, CLIENT);
             PathMatcher filter = FileHelper.getMmlMatcher(path);

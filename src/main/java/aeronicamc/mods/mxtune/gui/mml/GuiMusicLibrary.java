@@ -41,7 +41,7 @@ import static net.minecraftforge.fml.LogicalSide.CLIENT;
 public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 {
     private static final Logger LOGGER = LogManager.getLogger(GuiMusicLibrary.class);
-    private final Object THREAD_SYNC = new Object();
+    private final Object threadSync = new Object();
     public enum SortType implements Comparator<FileDataList.Entry>
     {
         NORMAL,
@@ -268,7 +268,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 
     private void reloadFiles()
     {
-        synchronized (THREAD_SYNC)
+        synchronized (threadSync)
         {
             Path path = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, CLIENT);
             PathMatcher filter = FileHelper.getMxtMatcher(path);

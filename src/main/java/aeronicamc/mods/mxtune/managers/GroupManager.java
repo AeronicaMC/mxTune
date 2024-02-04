@@ -277,11 +277,11 @@ public class GroupManager
         {
             switch (group.getMode())
             {
-                case Pin:
+                case PIN:
                     requesterGroupId.put(initiator.getId(), groupId);
                     PacketDispatcher.sendTo(new OpenPinEntryMessage(groupId), (ServerPlayerEntity) initiator);
                     break;
-                case Open:
+                case OPEN:
                     addMember(groupId, initiator);
                     requesterGroupId.remove(initiator.getId());
                     break;
@@ -325,52 +325,52 @@ public class GroupManager
         if (!group.isEmpty())
             switch (cmd)
             {
-                case Disband:
+                case DISBAND:
                     if (isLeader(sourceMemberId))
                         removeGroup(group);
                     break;
-                case ModePin:
+                case MODE_PIN:
                     if (isLeader(sourceMemberId)) {
-                        group.setMode(Group.Mode.Pin);
+                        group.setMode(Group.Mode.PIN);
                         sync();
                     }
                     break;
-                case ModeOpen:
+                case MODE_OPEN:
                     if (isLeader(sourceMemberId)) {
-                        group.setMode(Group.Mode.Open);
+                        group.setMode(Group.Mode.OPEN);
                         sync();
                     }
                     break;
-                case NewPin:
+                case NEW_PIN:
                     if (isLeader(sourceMemberId))
                     {
                         group.setPin(generatePin());
-                        PacketDispatcher.sendTo(new GroupCmdMessage(group.getPin(), GroupCmdMessage.Cmd.Pin, taggedMemberId), serverPlayer);
+                        PacketDispatcher.sendTo(new GroupCmdMessage(group.getPin(), GroupCmdMessage.Cmd.PIN, taggedMemberId), serverPlayer);
                     }
                     break;
-                case Pin:
+                case PIN:
                     if (group.isMember(sourceMemberId) || group.isMember(taggedMemberId))
-                        PacketDispatcher.sendTo(new GroupCmdMessage(GroupManager.getGroup(serverPlayer.getId()).getPin(), GroupCmdMessage.Cmd.Pin, taggedMemberId), serverPlayer);
+                        PacketDispatcher.sendTo(new GroupCmdMessage(GroupManager.getGroup(serverPlayer.getId()).getPin(), GroupCmdMessage.Cmd.PIN, taggedMemberId), serverPlayer);
                     break;
-                case Promote:
+                case PROMOTE:
                     if (isLeader(sourceMemberId)) {
                         group.setLeader(taggedMemberId);
                         sync();
                     }
                     break;
-                case Remove:
+                case REMOVE:
                     if (isLeader(sourceMemberId) && group.isMember(taggedMemberId) || sourceMemberId == taggedMemberId) {
                         LivingEntity taggedEntity = (serverPlayer.level.getEntity(taggedMemberId) != null) ? (LivingEntity) serverPlayer.level.getEntity(taggedMemberId) : null;
                         if (taggedEntity instanceof ServerPlayerEntity)
-                            PacketDispatcher.sendTo(new GroupCmdMessage(null, GroupCmdMessage.Cmd.CloseGui, taggedMemberId), (ServerPlayerEntity) taggedEntity);
+                            PacketDispatcher.sendTo(new GroupCmdMessage(null, GroupCmdMessage.Cmd.CLOSE_GUI, taggedMemberId), (ServerPlayerEntity) taggedEntity);
                         removeMember(serverPlayer, taggedMemberId);
                     }
                     break;
-                case Nil:
+                case NIL:
                 default:
             } else
         {
-            if (cmd == GroupCmdMessage.Cmd.CreateGroup)
+            if (cmd == GroupCmdMessage.Cmd.CREATE_GROUP)
             {
                 if (!isGrouped(sourceMemberId))
                     addGroup(serverPlayer);

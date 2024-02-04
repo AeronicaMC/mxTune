@@ -32,9 +32,9 @@ import java.util.OptionalDouble;
 
 public class ModRenderType extends RenderType
 {
-    private ModRenderType(String p_i225992_1_, VertexFormat p_i225992_2_, int p_i225992_3_, int p_i225992_4_, boolean p_i225992_5_, boolean p_i225992_6_, Runnable p_i225992_7_, Runnable p_i225992_8_)
+    private ModRenderType(String name, VertexFormat vertexFormat, int pi3, int pi4, boolean pi5, boolean pb6, Runnable runnable7, Runnable runnable8)
     {
-        super(p_i225992_1_, p_i225992_2_, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, p_i225992_7_, p_i225992_8_);
+        super(name, vertexFormat, pi3, pi4, pi5, pb6, runnable7, runnable8);
     }
 
     public static final int FULL_BRIGHT_LIGHT_MAP = (0xF << 4) | (0xF << 20);

@@ -69,11 +69,12 @@ public class RenderEvents
             event.getToolTip().add(new TranslationTextComponent("tooltip.mxtune.music_paper.help").withStyle(TextFormatting.YELLOW));
     }
 
-    static ResourceLocation TEXTURE = new ResourceLocation("textures/gui/toasts.png");
-    static int width = 160;
-    static int height = 32;
-    static int blitOffset = 0;
+    static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/toasts.png");
+    static final int WIDTH = 160;
+    static final int HEIGHT = 32;
+    static final int BLIT_OFFSET = 0;
 
+    @SuppressWarnings("deprecation")
     @SubscribeEvent
     public static void event(DrawHighlightEvent.HighlightBlock event)
     {
@@ -171,14 +172,14 @@ public class RenderEvents
             final ITextComponent infoText = new StringTextComponent("").append(SheetMusicHelper.getFormattedMusicDuration(sheetMusic))
                     .append(String.format(" %s %s", mc.getSoundManager().getDebugString(), ClientAudio.getDebugString())).withStyle(TextFormatting.WHITE);
 
-            final int offset = Math.max(Math.max(mc.font.width(titleText), mc.font.width(MXTune.isDevEnv() ? infoText : extraText)) + 40, width);
+            final int offset = Math.max(Math.max(mc.font.width(titleText), mc.font.width(MXTune.isDevEnv() ? infoText : extraText)) + 40, WIDTH);
             final MatrixStack pPoseStack = event.getMatrixStack();
 
             mc.getTextureManager().bind(TEXTURE);
             RenderSystem.color3f(1.0F, 1.0F, 1.0F);
-            RenderHelper.blit(pPoseStack, 0, 0, 0, 0, width, height);
-            RenderHelper.blit(pPoseStack, ((offset - width)/2) + 5, 0, 10, 0, width-10, height);
-            RenderHelper.blit(pPoseStack, offset - width + 10, 0, 10, 0, width, height);
+            RenderHelper.blit(pPoseStack, 0, 0, 0, 0, WIDTH, HEIGHT);
+            RenderHelper.blit(pPoseStack, ((offset - WIDTH)/2) + 5, 0, 10, 0, WIDTH -10, HEIGHT);
+            RenderHelper.blit(pPoseStack, offset - WIDTH + 10, 0, 10, 0, WIDTH, HEIGHT);
 
             mc.font.draw(pPoseStack, titleText, 30.0F, 7.0F, -11534256);
             mc.font.draw(pPoseStack, MXTune.isDevEnv() ? infoText : extraText, 30.0F, 17.0F, -11534256);
@@ -221,7 +222,7 @@ public class RenderEvents
             });
 
             ITextComponent testText = new TranslationTextComponent(stateName[0].getTranslationKey()).withStyle(TextFormatting.WHITE).append(" ").append(evs.inVenue() ? evs.getVenue().getVenueAABB().getCenter().toString() : "");
-            int offset = Math.max(mc.font.width(testText) + 40, width);
+            int offset = Math.max(mc.font.width(testText) + 40, WIDTH);
 
             if (mc.level != null && raytraceresult instanceof BlockRayTraceResult)
                 blockName = mc.level.getBlockState(blockpos).getBlock().getName().withStyle(TextFormatting.YELLOW);
@@ -232,9 +233,9 @@ public class RenderEvents
 
             mc.getTextureManager().bind(TEXTURE);
             RenderSystem.color3f(1.0F, 1.0F, 1.0F);
-            RenderHelper.blit(pPoseStack, 0, 0, 0, 0, width, height);
-            RenderHelper.blit(pPoseStack, ((offset - width)/2) + 5, 0, 10, 0, width-10, height);
-            RenderHelper.blit(pPoseStack, offset - width + 10, 0, 10, 0, width, height);
+            RenderHelper.blit(pPoseStack, 0, 0, 0, 0, WIDTH, HEIGHT);
+            RenderHelper.blit(pPoseStack, ((offset - WIDTH)/2) + 5, 0, 10, 0, WIDTH -10, HEIGHT);
+            RenderHelper.blit(pPoseStack, offset - WIDTH + 10, 0, 10, 0, WIDTH, HEIGHT);
 
             mc.font.draw(pPoseStack, testText, 30.0F, 7.0F, -11534256);
             mc.font.draw(pPoseStack, blockName, 30.0F, 17.0F, -11534256);
@@ -260,7 +261,7 @@ public class RenderEvents
                         pMatrixStack.pushPose();
                         pMatrixStack.translate(entityPos.x() - cam.x(), entityPos.y() - cam.y(), entityPos.z() - cam.z());
                         pMatrixStack.translate(0.0D, livingEntity.getBbHeight() + 0.8D, 0.0D);
-                        pMatrixStack.mulPose(RenderHelper.GetYAxisRotation(pActiveRenderInfo.rotation())); // imperfect
+                        pMatrixStack.mulPose(RenderHelper.getYAxisRotation(pActiveRenderInfo.rotation())); // imperfect
                         pMatrixStack.scale(0.5F, 0.5F, 0.5F);
 
                         Minecraft.getInstance().getItemRenderer().renderStatic(placardStack, ItemCameraTransforms.TransformType.FIXED, packedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer);
