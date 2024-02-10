@@ -9,6 +9,8 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class ModCommands
 {
+    private ModCommands() { /* NOOP */ }
+
     @SubscribeEvent
     public static void registerCommands(final RegisterCommandsEvent event)
     {

@@ -134,12 +134,6 @@ public class MXButton extends Button implements ILayout, IHooverText
         return hooverTexts;
     }
 
-    @Override
-    public void setMessage(ITextComponent pMessage)
-    {
-        super.setMessage(pMessage);
-    }
-
     public int getIndex()
     {
         return index;
@@ -169,7 +163,7 @@ public class MXButton extends Button implements ILayout, IHooverText
             int ellipsisWidth = mc.font.width("...");
 
             if (strWidth > width - 6 && strWidth > ellipsisWidth)
-                //TODO, srg names make it hard to figure out how to append to an ITextProperties from this trim operation, to wrap this in StringTextComponent is kinda dirty.
+                // srg names make it hard to figure out how to append to an ITextProperties from this trim operation, to wrap this in StringTextComponent is kinda dirty.
                 buttonText = new StringTextComponent(mc.font.substrByWidth(buttonText, width - 6 - ellipsisWidth).getString() + "...");
 
             drawCenteredString(mStack, mc.font, buttonText, this.x + this.width / 2, this.y + (this.height - 8) / 2, getFGColor());

@@ -53,6 +53,8 @@ public class ModBlockEntities
                                                      ModBlocks.MUSIC_BLOCK
                                                     );
 
+    private ModBlockEntities() { /* NOOP */}
+
     /**
      * Registers a tile entity type with the specified tile entity factory and valid block.
      *

@@ -27,6 +27,7 @@ public class ModEntities
     public static final RegistryObject<EntityType<MusicVenueInfoEntity>> MUSIC_VENUE_INFO = register("music_venue_info", EntityType.Builder.<MusicVenueInfoEntity>of((type, world) -> new MusicVenueInfoEntity(world), EntityClassification.MISC).sized(1.0F, 1.0F)
             .setCustomClientFactory((spawnEntity, world) -> new MusicVenueInfoEntity(world, spawnEntity.getAdditionalData())));
 
+    private ModEntities() { /* NOOP */ }
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.Builder<T> builder)
     {

@@ -399,7 +399,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         StringBuilder lines = new StringBuilder();
         for (int i = 0; i < viewableLineCount; i++)
         {
-            lines.append(mmlTextLines[i].getValue().replaceAll(",", ""));
+            lines.append(mmlTextLines[i].getValue().replace(",", ""));
             if (i < (viewableLineCount - 1)) lines.append(",");
         }
 
@@ -523,7 +523,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
             for (int i = 0; i < viewableLineCount; i++)
             {
                 // commas (chord part breaks) should not exist, so we will remove them.
-                lines.append(mmlTextLines[i].getValue().replaceAll(",", ""));
+                lines.append(mmlTextLines[i].getValue().replace(",", ""));
                 // append a comma to separate the melody and chord note parts (tracks).
                 if (i < (viewableLineCount - 1)) lines.append(",");
             }

@@ -38,6 +38,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModItemModelProperties
 {
+    private ModItemModelProperties() { /* NOOP */ }
+
     @SubscribeEvent
     public static void event(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {

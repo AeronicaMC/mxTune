@@ -3,7 +3,7 @@ package aeronicamc.mods.mxtune.gui.widget;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.gui.widget.Widget;
 
 public class GuiLockButton extends MXButton
 {
@@ -27,7 +27,7 @@ public class GuiLockButton extends MXButton
     public void renderButton(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
         if (this.visible)
         {
-            Minecraft.getInstance().getTextureManager().bind(Button.WIDGETS_LOCATION);
+            Minecraft.getInstance().getTextureManager().bind(Widget.WIDGETS_LOCATION);
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             Icon icon = getIcon();
             this.blit(pMatrixStack, this.x, this.y, icon.getX(), icon.getY(), this.width, this.height);

@@ -10,6 +10,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModParticles
 {
+    private ModParticles() { /* NOOP */ }
+
     private static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Reference.MOD_ID);
     private static boolean isInitialized;
 

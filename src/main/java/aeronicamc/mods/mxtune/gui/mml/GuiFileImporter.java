@@ -36,12 +36,12 @@ public class GuiFileImporter extends MXScreen
     private final Object threadSync = new Object();
     private enum SortType implements Comparator<PathList.Entry>
     {
-        NORMAL,
+        NORMAL { @Override protected int compare(String name1, String name2) { return 0; } },
         A_TO_Z{ @Override protected int compare(String name1, String name2){ return name1.compareTo(name2); }},
         Z_TO_A{ @Override protected int compare(String name1, String name2){ return name2.compareTo(name1); }};
 
         Button button;
-        protected int compare(String name1, String name2){ return 0; }
+        protected abstract int compare(String name1, String name2);
 
         @Override
         public int compare(PathList.Entry o1, PathList.Entry o2) {

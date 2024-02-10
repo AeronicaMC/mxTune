@@ -44,12 +44,12 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
     private final Object threadSync = new Object();
     public enum SortType implements Comparator<FileDataList.Entry>
     {
-        NORMAL,
+        NORMAL { @Override protected int compare(String name1, String name2){ return 0; }},
         A_TO_Z { @Override protected int compare(String name1, String name2){ return name1.compareTo(name2); }},
         Z_TO_A { @Override protected int compare(String name1, String name2){ return name2.compareTo(name1); }};
 
         private Button button;
-        protected int compare(String name1, String name2) { return 0; }
+        protected abstract int compare(String name1, String name2);
         @Override
         public int compare(FileDataList.Entry o1, FileDataList.Entry o2)
         {
@@ -180,11 +180,14 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         int buttonWidth = 75;
         int x = left;
 
-        addButton(SortType.NORMAL.button = new Button(x, titleTop, buttonWidth, 20 , SortType.NORMAL.getButtonText(), b -> resortFiles(SortType.NORMAL)));
+        SortType.NORMAL.button = new Button(x, titleTop, buttonWidth, 20 , SortType.NORMAL.getButtonText(), b -> resortFiles(SortType.NORMAL));
+        addButton(SortType.NORMAL.button);
         x += buttonWidth + buttonMargin;
-        addButton(SortType.A_TO_Z.button = new Button(x, titleTop, buttonWidth, 20 , SortType.A_TO_Z.getButtonText(), b -> resortFiles(SortType.A_TO_Z)));
+        SortType.A_TO_Z.button = new Button(x, titleTop, buttonWidth, 20 , SortType.A_TO_Z.getButtonText(), b -> resortFiles(SortType.A_TO_Z));
+        addButton(SortType.A_TO_Z.button);
         x += buttonWidth + buttonMargin;
-        addButton(SortType.Z_TO_A.button = new Button(x, titleTop, buttonWidth, 20 , SortType.Z_TO_A.getButtonText(), b -> resortFiles(SortType.Z_TO_A)));
+        SortType.Z_TO_A.button = new Button(x, titleTop, buttonWidth, 20 , SortType.Z_TO_A.getButtonText(), b -> resortFiles(SortType.Z_TO_A));
+        addButton(SortType.Z_TO_A.button);
 
         int buttonTop = height - 25;
         int xOpen = (this.width /2) - ((75 * 5)/2) - (buttonMargin *5);
@@ -329,7 +332,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 
     private void cancelDone()
     {
-        // TODO: Action related to dialogs: yes, no, cancel, etc.
+        // Future Actions on dialog close confirmation
         onClose();
     }
 

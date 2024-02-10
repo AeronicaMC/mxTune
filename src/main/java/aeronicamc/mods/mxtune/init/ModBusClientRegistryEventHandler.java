@@ -11,6 +11,8 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid= Reference.MOD_ID, value= Dist.CLIENT, bus=Mod.EventBusSubscriber.Bus.MOD)
 public class ModBusClientRegistryEventHandler
 {
+    private ModBusClientRegistryEventHandler() { /* NOOP */}
+
     @SubscribeEvent
     public static void event(ParticleFactoryRegisterEvent event)
     {

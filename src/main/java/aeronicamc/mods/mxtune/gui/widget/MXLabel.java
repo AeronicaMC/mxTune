@@ -104,7 +104,6 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
         this.fontRenderer = fontRenderer;
     }
 
-    // TODO: Rethink the label. Could I just base this on TextFieldWidget instead
     public int getWidth()
     {
         return width;

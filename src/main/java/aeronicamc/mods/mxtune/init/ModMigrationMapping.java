@@ -10,6 +10,8 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class ModMigrationMapping
 {
+    private ModMigrationMapping() { /* NOOP */ }
+
     @SubscribeEvent
     public static void missingItemMapping(RegistryEvent.MissingMappings<Item> event)
     {

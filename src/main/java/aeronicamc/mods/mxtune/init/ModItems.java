@@ -40,6 +40,8 @@ import net.minecraftforge.registries.ForgeRegistries;
  */
 public class ModItems
 {
+    private ModItems() { /* NOOP */ }
+
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Reference.MOD_ID);
     private static boolean isInitialized;
 

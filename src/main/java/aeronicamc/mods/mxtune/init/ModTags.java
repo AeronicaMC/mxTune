@@ -10,30 +10,33 @@ import net.minecraftforge.common.Tags;
 
 public class ModTags
 {
+    private ModTags() { /* NOOP */ }
+
     public static class Blocks
     {
-        public static final Tags.IOptionalNamedTag<Block> MUSIC_MACHINES = mxtuneBlockTag("music_machines/music_machine");
-    }
+        private Blocks() { /* NOOP */ }
 
-    private static Tags.IOptionalNamedTag<Block> mxtuneBlockTag(String name)
-    {
-        return BlockTags.createOptional(new ResourceLocation(Reference.MOD_ID, name));
+        public static final Tags.IOptionalNamedTag<Block> MUSIC_MACHINES = mxtuneBlockTag("music_machines/music_machine");
+
+        private static Tags.IOptionalNamedTag<Block> mxtuneBlockTag(String name) {
+            return BlockTags.createOptional(new ResourceLocation(Reference.MOD_ID, name));
+        }
     }
 
     public static class Items
     {
+        private Items() { /* NOOP */ }
+
         public static final Tags.IOptionalNamedTag<Item> TOOLS_WRENCH = forgeTag("tools/wrench");
         public static final Tags.IOptionalNamedTag<Item> INSTRUMENTS = mxtuneItemTag("instruments/instrument");
         public static final Tags.IOptionalNamedTag<Item> MUSIC_MACHINES = mxtuneItemTag("music_machines/music_machine");
-    }
 
-    private static Tags.IOptionalNamedTag<Item> forgeTag(String name) {
+        private static Tags.IOptionalNamedTag<Item> forgeTag(String name) {
+            return ItemTags.createOptional(new ResourceLocation(Reference.MOD_ID_FORGE, name));
+        }
 
-        return ItemTags.createOptional(new ResourceLocation(Reference.MOD_ID_FORGE, name));
-    }
-
-    private static Tags.IOptionalNamedTag<Item> mxtuneItemTag(String name)
-    {
-        return ItemTags.createOptional(new ResourceLocation(Reference.MOD_ID, name));
+        private static Tags.IOptionalNamedTag<Item> mxtuneItemTag(String name) {
+            return ItemTags.createOptional(new ResourceLocation(Reference.MOD_ID, name));
+        }
     }
 }

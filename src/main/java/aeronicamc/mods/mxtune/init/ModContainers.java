@@ -53,6 +53,8 @@ public class ModContainers
                                                             () -> new ContainerType<>(new MultiInstContainer.Factory())
                                                            );
 
+    private ModContainers() { /* NOOP */ }
+
     /**
      * Registers the {@link DeferredRegister} instance with the mod event bus.
      * <p>

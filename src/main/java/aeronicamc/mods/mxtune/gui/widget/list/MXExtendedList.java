@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.function.BiConsumer;
 
-@SuppressWarnings("unused, deprecation")
+@SuppressWarnings("deprecation")
 public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>> extends AbstractList<E> implements ILayout
 {
     protected int padding;
@@ -28,12 +28,12 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
     private boolean renderTopAndBottom;
     protected long lastClick = System.currentTimeMillis();
 
-    public MXExtendedList()
+    protected MXExtendedList()
     {
         this(Minecraft.getInstance(), 1, 1, 1, 1, Minecraft.getInstance().font.lineHeight + 4, 1, Misc.nonNullInjected());
     }
 
-    public MXExtendedList(Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, BiConsumer<E, Boolean> selectCallback)
+    protected MXExtendedList(Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, BiConsumer<E, Boolean> selectCallback)
     {
         super(pMinecraft, pWidth, pHeight, pY0, pY1, pItemHeight);
         this.rowWidth = pWidth;
@@ -60,18 +60,6 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         this.height = pHeight;
         this.y0 = pY;
         this.y1 = y0 + pHeight;
-    }
-
-    @Override
-    public int getLeft()
-    {
-        return super.getLeft();
-    }
-
-    @Override
-    public int getTop()
-    {
-        return super.getTop();
     }
 
     @Override
@@ -160,7 +148,7 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         return active;
     }
 
-    protected void renderBorder(MatrixStack pPoseStack, int pMouseX, int pMouseY)
+    protected void renderBorder(int pMouseX, int pMouseY)
     {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuilder();
@@ -190,14 +178,15 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
         bufferbuilder.vertex(this.x0, this.y1, 0.0D).uv(this.x0 / 32.0F, (this.y1 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
-        bufferbuilder.vertex(this.x1, this.y1, 0.0D).uv(this.x1 / 32.0F, (float)(this.y1 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
-        bufferbuilder.vertex(this.x1, this.y0, 0.0D).uv((float)this.x1 / 32.0F, (float)(this.y0 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
+        bufferbuilder.vertex(this.x1, this.y1, 0.0D).uv(this.x1 / 32.0F, (this.y1 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
+        bufferbuilder.vertex(this.x1, this.y0, 0.0D).uv(this.x1 / 32.0F, (this.y0 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
         bufferbuilder.vertex(this.x0, this.y0, 0.0D).uv(this.x0 / 32.0F, (this.y0 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
         tessellator.end();
     }
 
+    @Override
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
-        renderBorder(pMatrixStack, pMouseX, pMouseY);
+        renderBorder(pMouseX, pMouseY);
         MainWindow client = minecraft.getWindow();
         double scaleW = (double) client.getWidth() / client.getGuiScaledWidth();
         double scaleH = (double) client.getHeight() / client.getGuiScaledHeight();
@@ -212,7 +201,6 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         if (this.renderBackground) {
             this.minecraft.getTextureManager().bind(AbstractGui.BACKGROUND_LOCATION);
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            float f = 32.0F;
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
             bufferbuilder.vertex(this.x0, this.y1, 0.0D).uv(this.x0 / 32.0F, (this.y1 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
             bufferbuilder.vertex(this.x1, this.y1, 0.0D).uv(this.x1 / 32.0F, (this.y1 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
@@ -229,8 +217,6 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
             this.minecraft.getTextureManager().bind(AbstractGui.BACKGROUND_LOCATION);
             RenderSystem.enableDepthTest();
             RenderSystem.depthFunc(519);
-            float f1 = 32.0F;
-            int l = -100;
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
             bufferbuilder.vertex(this.x0, this.y0, -100.0D).uv(0.0F, this.y0 / 32.0F).color(64, 64, 64, 255).endVertex();
             bufferbuilder.vertex((double)this.x0 + this.width, this.y0, -100.0D).uv(this.width / 32.0F, this.y0 / 32.0F).color(64, 64, 64, 255).endVertex();
@@ -248,7 +234,6 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
             RenderSystem.disableAlphaTest();
             RenderSystem.shadeModel(7425);
             RenderSystem.disableTexture();
-            int i1 = 4;
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
             bufferbuilder.vertex(this.x0, this.y0 + 4D, 0.0D).uv(0.0F, 1.0F).color(0, 0, 0, 0).endVertex();
             bufferbuilder.vertex(this.x1, this.y0 + 4D, 0.0D).uv(1.0F, 1.0F).color(0, 0, 0, 0).endVertex();
