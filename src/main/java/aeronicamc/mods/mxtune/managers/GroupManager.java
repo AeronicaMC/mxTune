@@ -36,6 +36,8 @@ public class GroupManager
     //Pin Management
     private static final Map<Integer, Integer> requesterGroupId = new HashMap<>();
 
+    private GroupManager() { /* NOOP */ }
+
     /**
      * Generate a 4 digit leading zero pin string in the range of 0001 to 9999 that is not already in use.
      * @return a unique 4 digit pin.
@@ -140,7 +142,6 @@ public class GroupManager
      */
     public static boolean removeMember(int memberId)
     {
-        //PlayManager.purgeMember(memberID);
         synchronized (groups)
         {
             boolean[] result = new boolean[1];
@@ -370,11 +371,8 @@ public class GroupManager
                 default:
             } else
         {
-            if (cmd == GroupCmdMessage.Cmd.CREATE_GROUP)
-            {
-                if (!isGrouped(sourceMemberId))
-                    addGroup(serverPlayer);
-            }
+            if (cmd == GroupCmdMessage.Cmd.CREATE_GROUP && !isGrouped(sourceMemberId))
+                addGroup(serverPlayer);
         }
     }
 
@@ -496,11 +494,12 @@ public class GroupManager
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
     public static class EventHandler
     {
+        private EventHandler() { /* NOOP */ }
+
         @SubscribeEvent
         public static void event(PlayerSleepInBedEvent event)
         {
-            if (!event.getPlayer().level.isClientSide() && !isNotGrouped(event.getPlayer().getId()))
-            {
+            if (!event.getPlayer().level.isClientSide() && !isNotGrouped(event.getPlayer().getId())) {
                 event.getPlayer().displayClientMessage(new TranslationTextComponent("message.mxtune.groupManager.cannot_sleep_when_grouped"), true);
                 event.setResult(PlayerEntity.SleepResult.OTHER_PROBLEM);
             }
@@ -516,9 +515,8 @@ public class GroupManager
         @SubscribeEvent
         public static void event(LivingDamageEvent event)
         {
-            if (!event.getEntity().level.isClientSide())
-                if (event.getEntity().isAlive() && event.getAmount() > 1.5F)
-                    removeMember(event.getEntityLiving(), event.getEntity().getId());
+            if (!event.getEntity().level.isClientSide() && event.getEntity().isAlive() && event.getAmount() > 1.5F)
+                removeMember(event.getEntityLiving(), event.getEntity().getId());
         }
 
         @SubscribeEvent

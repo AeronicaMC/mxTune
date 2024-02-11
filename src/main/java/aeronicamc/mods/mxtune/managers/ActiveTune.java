@@ -104,17 +104,17 @@ public class ActiveTune
         }
     }
 
-    synchronized static List<Entry> getActiveTuneEntries()
+    static synchronized List<Entry> getActiveTuneEntries()
     {
         return new ArrayList<>(playIdToActiveTuneEntry.values());
     }
 
-    synchronized static boolean entityExists(int entityId)
+    static synchronized boolean entityExists(int entityId)
     {
         return entityIdToActiveTuneEntry.containsKey(entityId);
     }
 
-    synchronized static boolean entityActive(int entityId)
+    static synchronized boolean entityActive(int entityId)
     {
         return entityExists(entityId) && entityIdToActiveTuneEntry.get(entityId).isActive();
     }
@@ -124,22 +124,22 @@ public class ActiveTune
      * @param playId of interest
      * @return sourceEntityId or 0 if it does not exist.
      */
-    synchronized static int getSourceEntityForPlayId(int playId)
+    static synchronized int getSourceEntityForPlayId(int playId)
     {
         return activePlayIdToSourceEntityId.getOrDefault(playId, 0);
     }
 
-    synchronized static int getPlayIdForEntity(int entityId)
+    static synchronized int getPlayIdForEntity(int entityId)
     {
         return entityExists(entityId) ? entityIdToActiveTuneEntry.get(entityId).playId : INVALID;
     }
 
-    synchronized static boolean isActivePlayId(int playId)
+    static synchronized boolean isActivePlayId(int playId)
     {
         return playIdToActiveTuneEntry.containsKey(playId) && playIdToActiveTuneEntry.get(playId).isActive();
     }
 
-    synchronized static Optional<Entry> getActiveTuneByEntityId(@Nullable Entity entity)
+    static synchronized Optional<Entry> getActiveTuneByEntityId(@Nullable Entity entity)
     {
         return getActiveTuneEntries().stream().filter(entry -> ((entity != null) && (entry.sourceEntityId == entity.getId()))).findFirst();
     }

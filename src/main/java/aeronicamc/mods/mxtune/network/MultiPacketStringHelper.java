@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -26,7 +25,7 @@ public class MultiPacketStringHelper
     private MultiPacketStringHelper() { /* NOP */ }
 
     @Nullable
-    public static String readLongString(PacketBuffer buffer) throws IOException
+    public static String readLongString(PacketBuffer buffer)
     {
         int timeout = 1200;
         StringBuilder stringBuilder = new StringBuilder();
@@ -84,7 +83,7 @@ public class MultiPacketStringHelper
         }
     }
 
-    public static void writeLongString(PacketBuffer buffer, String longString) throws IOException
+    public static void writeLongString(PacketBuffer buffer, String longString)
     {
         int totalLength;
         int index = 0;

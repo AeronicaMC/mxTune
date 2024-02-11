@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.items;
 
+import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.managers.Group;
 import aeronicamc.mods.mxtune.managers.GroupManager;
 import aeronicamc.mods.mxtune.util.IMusic;
@@ -27,7 +28,7 @@ import static aeronicamc.mods.mxtune.util.SheetMusicHelper.*;
 
 public class MusicScoreItem extends Item implements IMusic
 {
-    private final static ITextComponent SHIFT_PARTS_01 = new TranslationTextComponent("tooltip.mxtune.music_score.shift_parts_01");
+    private static final ITextComponent SHIFT_PARTS_01 = new TranslationTextComponent("tooltip.mxtune.music_score.shift_parts_01");
 
     public MusicScoreItem(Properties pProperties)
     {
@@ -77,11 +78,10 @@ public class MusicScoreItem extends Item implements IMusic
         return MusicType.SCORE;
     }
 
-    // TODO Remove and replace since this is just for testing
     @Override
     public ActionResult<ItemStack> use(World pLevel, PlayerEntity pPlayer, Hand pHand)
     {
-        if (!pLevel.isClientSide)
+        if (!pLevel.isClientSide && MXTune.isDevEnv())
         {
             if (!pPlayer.isShiftKeyDown())
             {

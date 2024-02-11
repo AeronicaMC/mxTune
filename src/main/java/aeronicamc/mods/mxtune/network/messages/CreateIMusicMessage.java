@@ -17,7 +17,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
@@ -55,18 +54,10 @@ public class CreateIMusicMessage extends AbstractMessage<CreateIMusicMessage>
         final String musicTitle = buffer.readUtf();
         final byte[] extraData = buffer.readByteArray();
         String musicText = "";
-        boolean error = false;
-        try
-        {
-            musicText = MultiPacketStringHelper.readLongString(buffer);
-        } catch (IOException e)
-        {
-            LOGGER.error("unable to decode string", e);
-            error = true;
-        }
+        musicText = MultiPacketStringHelper.readLongString(buffer);
         final String[] partInstrumentIds = nbtToStringArray(buffer.readNbt());
         final MusicType musicType = buffer.readEnum(MusicType.class);
-        return new CreateIMusicMessage(musicTitle, extraData, musicText != null ? musicText : "", partInstrumentIds, musicType, error);
+        return new CreateIMusicMessage(musicTitle, extraData, musicText != null ? musicText : "", partInstrumentIds, musicType, musicText == null);
     }
 
     @Override
@@ -74,16 +65,7 @@ public class CreateIMusicMessage extends AbstractMessage<CreateIMusicMessage>
     {
         buffer.writeUtf(message.musicTitle);
         buffer.writeByteArray(message.extraData);
-        try
-        {
-            MultiPacketStringHelper.writeLongString(buffer, message.musicText);
-        } catch (IOException e)
-        {
-            LOGGER.warn("unable to encode string", e);
-            buffer.writeUtf("");
-            buffer.writeBoolean(true);
-            return;
-        }
+        MultiPacketStringHelper.writeLongString(buffer, message.musicText);
         buffer.writeNbt(stringArrayToNBT(message.partInstrumentIds));
         buffer.writeEnum(message.musicType);
         buffer.writeBoolean(message.error);

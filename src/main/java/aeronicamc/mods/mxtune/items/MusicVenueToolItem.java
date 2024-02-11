@@ -23,13 +23,13 @@ import java.util.Optional;
 
 public class MusicVenueToolItem extends Item
 {
-    private final static ITextComponent SHIFT_HELP = new TranslationTextComponent("tooltip.mxtune.instrument_item.shift_help_01");
+    private static final ITextComponent SHIFT_HELP = new TranslationTextComponent("tooltip.mxtune.instrument_item.shift_help_01");
     private static final ITextComponent HELP_01 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_block.help_01").withStyle(TextFormatting.YELLOW);
-    private final static ITextComponent SHIFT_HELP_02 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_02").withStyle(TextFormatting.AQUA);
-    private final static ITextComponent SHIFT_HELP_03 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_03").withStyle(TextFormatting.YELLOW);
-    private final static ITextComponent SHIFT_HELP_04 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_04").withStyle(TextFormatting.GREEN);
-    private final static ITextComponent SHIFT_HELP_05 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_05").withStyle(TextFormatting.YELLOW);
-    private final static ITextComponent SHIFT_HELP_06 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_06").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent SHIFT_HELP_02 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_02").withStyle(TextFormatting.AQUA);
+    private static final ITextComponent SHIFT_HELP_03 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_03").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent SHIFT_HELP_04 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_04").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent SHIFT_HELP_05 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_05").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent SHIFT_HELP_06 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_06").withStyle(TextFormatting.GREEN);
 
     public MusicVenueToolItem(Properties properties)
     {
@@ -88,11 +88,5 @@ public class MusicVenueToolItem extends Item
     private Optional<PlayerEntity> getPlayer(ItemUseContext context)
     {
         return Optional.ofNullable(context.getPlayer());
-    }
-
-    @Override
-    public ActionResultType useOn(ItemUseContext context)
-    {
-        return super.useOn(context);
     }
 }

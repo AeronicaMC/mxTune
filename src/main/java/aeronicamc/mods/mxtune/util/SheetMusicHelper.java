@@ -49,7 +49,6 @@ import static net.minecraftforge.common.util.Constants.NBT;
 public class SheetMusicHelper
 {
     private static final Logger LOGGER = LogManager.getLogger(SheetMusicHelper.class);
-    public static final UUID UUID_EMPTY = UUID.fromString("00000000-0000-0000-0000-000000000000");
     public static final String KEY_SHEET_MUSIC = "SheetMusic";
     public static final String KEY_EXTRA_DATA = "ExtraData"; // array of int
     public static final String KEY_DURATION = "Duration";
@@ -182,7 +181,7 @@ public class SheetMusicHelper
     }
 
     /**
-     * CLient or Server Side
+     * Client or Server Side
      * <p></p>Get the duration in seconds from a sheet music stack. (not validated here)
      * @param sheetMusicStack The sheet music stack.
      * @return The stored duration in seconds if found or 0. (The minimum duration is 4 seconds if validated)
@@ -357,12 +356,6 @@ public class SheetMusicHelper
         return new MusicProperties(buildMML.toString(), duration[0]);
     }
 
-    // TODO: when placed instruments are created.
-    public static ItemStack getIMusicFromIPlacedInstrument(BlockPos pos, PlayerEntity playerIn, boolean isPlaced)
-    {
-        return ItemStack.EMPTY; // TODO: rewrite tile instrument inventory slot queries
-    }
-
     /**
      * Server Side
      * <p></p>Returns the IMusic stack of 1 from an IInstrument Stack of 1
@@ -435,12 +428,13 @@ public class SheetMusicHelper
                 contents.putInt(KEY_PARTS_COUNT, partInstrumentIds.length);
                 contents.putUUID(KEY_OWNER_UUID, ownerUUID);
                 contents.putString(KEY_OWNER_NAME, ownerName);
-                int[] index = new int[1];
+                int[] index = { 0 };
                 if (partInstrumentIds.length > 0 && partInstrumentIds.length <= Reference.MAX_MML_PARTS) {
-                    Arrays.stream(partInstrumentIds).sequential().forEach(string -> {
-                        contents.putString(String.format("%s%d", KEY_PART_ID, index[0]++), string);
-                    });
+                    Arrays.stream(partInstrumentIds).sequential()
+                            .forEach(string -> contents.putString(String.format("%s%d", KEY_PART_ID, index[0]++), string));
                     compound.put(KEY_SHEET_MUSIC, contents);
+
+                    LOGGER.debug("Wrote {} title: \"{}\", extra: {}", musicType, musicTitle, extraData);
                     return true;
                 } else
                     LOGGER.warn("Number of parts out of range 1-{}. Found {}", Reference.MAX_MML_PARTS, partInstrumentIds.length);
@@ -594,7 +588,7 @@ public class SheetMusicHelper
 
     /**
      * Client and Server side
-     * <p></p>Validate the supplied MML and return it's length in seconds.
+     * <p></p>Validate the supplied MML and return its length in seconds.
      * @param mml to be validated and its duration in seconds calculated.
      * @return a ValidDuration with 'isValidMML' set true for valid MML else false, and 'getDuration' the length of the tune in seconds<B></B>
      * for valid MML, else 0.
@@ -637,25 +631,4 @@ public class SheetMusicHelper
                 absSeconds % 60);
         return seconds < 0 ? "-" + positive : positive;
     }
-
-    // TODO: When music mobs are created and can drop sheet music.
-    public static ItemStack createSheetMusic(String title, byte[] extraData, String mml, String instrumentId)
-    {
-        ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
-        String[] instrumentIds = {""};
-        instrumentIds[0] = instrumentId;
-        if (SheetMusicHelper.writeIMusic(sheetMusic, title, extraData, mml, instrumentIds, MusicType.PART, UUID_EMPTY , "---"))
-        {
-            return sheetMusic;
-        }
-        else
-            return new ItemStack(ModItems.MUSIC_PAPER.get());
-    }
-
-    // TODO: When music mobs are created and can drop sheet music.
-//    public static ItemStack createSheetMusic(SheetMusicSongs sheetMusicSong)
-//    {
-//        return createSheetMusic(sheetMusicSong.getTitle(), sheetMusicSong.getMML());
-//    }
-
 }

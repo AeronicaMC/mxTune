@@ -38,6 +38,8 @@ import net.minecraft.util.math.MathHelper;
  */
 public class PlacardPropertyGetter
 {
+    private PlacardPropertyGetter() { /* NOOP */ }
+
     public static final ResourceLocation NAME = new ResourceLocation(Reference.MOD_ID, "placard_state");
 
     private static final IItemPropertyGetter GETTER = (pItemStack, pLevel, pEntity) ->

@@ -112,6 +112,10 @@ public class ImportHelper
                 ZipEntry entry = entries.nextElement();
                 InputStream in = new BufferedInputStream(file.getInputStream(entry));
 
+                String entryName = entry.getName();
+                String entryExt = FilenameUtils.getExtension(entry.getName());
+                long entrySize = entry.getSize();
+
                 // sonarcloud recommended solution to zip-bomb negation
                 totalEntryArchive ++;
                 totalSizeEntry += nBytes;
@@ -162,7 +166,7 @@ public class ImportHelper
                         }
                     }
                 } else
-                    LOGGER.warn("|-- Ext: {}, File: {}, size from file: {}, size read {}, Compression Ratio {}", FilenameUtils.getExtension(entry.getName()), entry.getName(), entry.getSize(), totalSizeEntry, compressionRatio);
+                    LOGGER.warn("|-- Ext: {}, File: {}, size from file: {}, size read {}, Compression Ratio {}", entryExt, entryName, entrySize, totalSizeEntry, compressionRatio);
             }
             LOGGER.debug("| Largest Compression Ratio: {} < {} Threshold Ratio", largestCompressionRatio, THRESHOLD_RATIO);
             LOGGER.debug("| Total Archive Size:        {} < {} Threshold Size", totalSizeArchive, THRESHOLD_SIZE);

@@ -38,6 +38,8 @@ import net.minecraft.util.math.MathHelper;
  */
 public class ScrapAnimationPropertyGetter
 {
+    private ScrapAnimationPropertyGetter() { /* NOOP */ }
+
     public static final ResourceLocation NAME = new ResourceLocation(Reference.MOD_ID, "scrap_animation");
 
     private static final IItemPropertyGetter GETTER = (pItemStack, pLevel, pEntity) ->

@@ -24,6 +24,7 @@ public class MusicVenueInfoItem extends Item
     /**
      * Called when this item is used when targeting a Block
      */
+    @Override
     public ActionResultType useOn(ItemUseContext pContext) {
         BlockPos blockpos = pContext.getClickedPos();
         Direction direction = pContext.getClickedFace();

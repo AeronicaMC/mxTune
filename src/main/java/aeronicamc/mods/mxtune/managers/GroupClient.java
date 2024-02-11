@@ -17,6 +17,8 @@ public class GroupClient
     private static IGroupClientChangedCallback callback;
     private static String privatePin = "----";
 
+    private GroupClient() { /* NOOP */ }
+
     public static void clear()
     {
         synchronized (groupMap) { groupMap.clear(); }
@@ -103,7 +105,7 @@ public class GroupClient
         return groupMap.values().stream().filter(group -> group.isMember(memberId)).findFirst().orElse(Group.EMPTY);
     }
 
-    public synchronized static Group getGroupById(int groupId)
+    public static synchronized Group getGroupById(int groupId)
     {
         return groupMap.values().stream().filter(group -> group.getGroupId() == groupId).findFirst().orElse(Group.EMPTY);
     }

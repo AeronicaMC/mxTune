@@ -40,10 +40,10 @@ import static aeronicamc.mods.mxtune.util.SheetMusicHelper.getFormattedExtraText
 
 public class MultiInstItem extends Item implements IInstrument, INamedContainerProvider
 {
-    private final static String KEY_PLAY_ID = "MXTunePlayId";
-    private final static ITextComponent SHIFT_HELP_01 = new TranslationTextComponent("tooltip.mxtune.instrument_item.shift_help_01");
-    private final static ITextComponent SHIFT_HELP_02 = new TranslationTextComponent("tooltip.mxtune.instrument_item.shift_help_02");
-    private final static ITextComponent SHIFT_HELP_03 = new TranslationTextComponent("tooltip.mxtune.instrument_item.shift_help_03");
+    private static final String KEY_PLAY_ID = "MXTunePlayId";
+    private static final ITextComponent SHIFT_HELP_01 = new TranslationTextComponent("tooltip.mxtune.instrument_item.shift_help_01");
+    private static final ITextComponent SHIFT_HELP_02 = new TranslationTextComponent("tooltip.mxtune.instrument_item.shift_help_02");
+    private static final ITextComponent SHIFT_HELP_03 = new TranslationTextComponent("tooltip.mxtune.instrument_item.shift_help_03");
 
     public MultiInstItem(Properties pProperties)
     {
@@ -53,23 +53,16 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     @Override
     public ActionResult<ItemStack> use(World pLevel, PlayerEntity pPlayer, Hand pHand)
     {
+        ItemStack itemstack = pPlayer.getItemInHand(pHand);
         if (!pLevel.isClientSide())
         {
-            ItemStack itemStackIn = pPlayer.getItemInHand(pHand);
-            int playId = getPlayId(itemStackIn);
+            int playId = getPlayId(itemstack);
             if (pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND))
-            {
                 NetworkHooks.openGui((ServerPlayerEntity) pPlayer, this);
-            }
-            else if (!pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND))
-            {
-                if ((playId <= 0) || !GroupManager.isActiveOrQueuedPlayId(playId))
-                {
-                    setPlayId(itemStackIn, PlayManager.playMusic(pPlayer));
-                }
-            }
+            else if (!pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND) && ((playId <= 0) || !GroupManager.isActiveOrQueuedPlayId(playId)))
+                setPlayId(itemstack, PlayManager.playMusic(pPlayer));
         }
-        return ActionResult.consume(pPlayer.getItemInHand(pHand));
+        return ActionResult.pass(itemstack);
     }
 
     /**
@@ -197,6 +190,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
         return 72000;
     }
 
+    @Override
     public UseAction getUseAnimation(ItemStack pStack) {
         return UseAction.NONE;
     }

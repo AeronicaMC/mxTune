@@ -40,6 +40,8 @@ import net.minecraft.util.math.MathHelper;
  */
 public class SheetMusicAgePropertyGetter
 {
+    private SheetMusicAgePropertyGetter() { /* NOOP */ }
+
     public static final ResourceLocation NAME = new ResourceLocation(Reference.MOD_ID, "sheet_music_age");
 
     private static final IItemPropertyGetter GETTER = (pItemStack, pLevel, pEntity) ->

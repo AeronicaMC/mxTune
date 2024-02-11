@@ -121,7 +121,7 @@ public final class PlayManager
                 if (GroupManager.isGrouped(playerID))
                     return queueJam(playerIn, musicText, duration, playerID);
                 else
-                    return playSolo(playerIn, musicText, duration, playerID);
+                    return playSolo(playerIn, musicText, duration);
 
             } else
             {
@@ -179,12 +179,13 @@ public final class PlayManager
                 group.setPlayId(playId);
                 GroupManager.sync();
             }
-            else
+            else {
                 playId = group.getPlayId();
+            }
         return playId;
     }
 
-    private static int playSolo(PlayerEntity playerIn, String musicText, int duration, int playerID)
+    private static int playSolo(PlayerEntity playerIn, String musicText, int duration)
     {
         int playId = getNextPlayID();
         int entityId = playerIn.getId();
@@ -293,7 +294,6 @@ public final class PlayManager
 
                         // Track the listener and don't resend the musicText.
                         activeTune.addListener(listeningPlayer.getId());
-                        //LOGGER.debug("sendMusicTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
                     }
                     else
                     {

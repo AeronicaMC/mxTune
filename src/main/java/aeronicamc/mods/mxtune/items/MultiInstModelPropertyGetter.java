@@ -11,6 +11,8 @@ import net.minecraft.util.math.MathHelper;
 
 public class MultiInstModelPropertyGetter
 {
+    private MultiInstModelPropertyGetter() { /* NOOP */ }
+
     public static final ResourceLocation NAME = new ResourceLocation(Reference.MOD_ID, "multi_inst_model");
 
     private static final IItemPropertyGetter GETTER = (pItemStack, pLevel, pEntity) ->

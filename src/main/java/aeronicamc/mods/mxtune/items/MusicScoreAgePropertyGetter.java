@@ -40,6 +40,8 @@ import net.minecraft.util.math.MathHelper;
  */
 public class MusicScoreAgePropertyGetter
 {
+    private MusicScoreAgePropertyGetter() { /* NOOP */ }
+
     public static final ResourceLocation NAME = new ResourceLocation(Reference.MOD_ID, "music_score_age");
 
     private static final IItemPropertyGetter GETTER = (pItemStack, pLevel, pEntity) ->
