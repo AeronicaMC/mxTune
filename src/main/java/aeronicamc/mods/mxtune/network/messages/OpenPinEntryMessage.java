@@ -25,8 +25,8 @@ public class OpenPinEntryMessage extends AbstractMessage<OpenPinEntryMessage>
     @Override
     public OpenPinEntryMessage decode(PacketBuffer buffer)
     {
-        final int groupId = buffer.readVarInt();
-        return new OpenPinEntryMessage(groupId);
+        final int groupIdDecode = buffer.readVarInt();
+        return new OpenPinEntryMessage(groupIdDecode);
     }
 
     @Override

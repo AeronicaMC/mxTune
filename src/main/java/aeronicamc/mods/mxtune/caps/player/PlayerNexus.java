@@ -13,6 +13,8 @@ import java.util.Optional;
 
 public class PlayerNexus implements IPlayerNexus
 {
+    // ctrlKey client syncs to server via network key message.
+    private boolean ctrlKey;
     private int playId = PlayIdSupplier.INVALID;
     private PlayerEntity player;
     private EntityVenueState evs = EntityVenueState.INVALID;
@@ -27,6 +29,16 @@ public class PlayerNexus implements IPlayerNexus
     private Optional<PlayerEntity> getPlayer()
     {
         return Optional.of(player);
+    }
+
+    @Override
+    public void setCtrlKey(boolean state) {
+        ctrlKey = state;
+    }
+
+    @Override
+    public boolean getCtrlKey() {
+        return ctrlKey;
     }
 
     @Override

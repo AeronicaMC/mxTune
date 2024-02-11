@@ -38,6 +38,7 @@ import java.util.List;
 @SuppressWarnings("restriction")
 public class MIDISystemUtil
 {
+    private MIDISystemUtil() { /* NOOP */ }
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String NO_SOUND_BANK = new TranslationTextComponent("errors.mxtune.midi_system_util.no_sound_bank_loaded").getString();
     private static MidiDevice.Info bestSynthInfo = null;
@@ -120,8 +121,9 @@ public class MIDISystemUtil
 
                 /* This is workaround for a java.sound.midi system bug */
                 soundBankAvailable = !mxTuneSoundBank.getName().isEmpty();
-                LOGGER.info("--- " + (mxTuneSoundBank.getName().isEmpty()? "*No Name*" : mxTuneSoundBank.getName() ) + " ---");
-                LOGGER.info("Number of instruments: " + inst.length);
+                String soundBankName = mxTuneSoundBank.getName().isEmpty()? "*No Name*" : mxTuneSoundBank.getName();
+                LOGGER.info("--- {} ---", soundBankName);
+                LOGGER.info("Number of instruments: {}", inst.length);
                 for (Instrument i: inst) LOGGER.info("({}, {}) {}", i.getPatch().getBank(), i.getPatch().getProgram(), i.getName());
                 
             }
@@ -132,16 +134,16 @@ public class MIDISystemUtil
             LOGGER.info(bestSynthInfo.getDescription());
             LOGGER.info(bestSynthInfo.getVendor());
             LOGGER.info(bestSynthInfo.getVersion());
-            LOGGER.info("MaxPolyphony: " + bestSynth.getMaxPolyphony() + ", MaxReceivers: " + ((bestSynth.getMaxReceivers() == -1) ? "Unlimited" : bestSynth.getMaxReceivers()));
-            LOGGER.info("Synthsizer Available: ?         " + synthAvailable);
-            LOGGER.info("Default Sound Bank Available: ? " + soundBankAvailable);
+            String maxReceivers = String.format("%s", (bestSynth.getMaxReceivers() == -1) ? "Unlimited" : bestSynth.getMaxReceivers());
+            LOGGER.info("MaxPolyphony: {}, MaxReceivers: {}", bestSynth.getMaxPolyphony(), maxReceivers);
+            LOGGER.info("Synthesizer Available: ?        {}", synthAvailable);
+            LOGGER.info("Default Sound Bank Available: ? {}", soundBankAvailable);
             midiAvailable = true;
         } else
         {
-            LOGGER.error("WARNING - Default Synthesizer available? : " + synthAvailable);
-            LOGGER.error("WARNING - Default Sound Bank available?  : " + soundBankAvailable);
+            LOGGER.error("WARNING - Default Synthesizer available: ?  {}", synthAvailable);
+            LOGGER.error("WARNING - Default Sound Bank available: ?   {}", soundBankAvailable);
             LOGGER.error("WARNING - MIDI System is missing resources! mxTune cannot function properly!");
-
             midiAvailable = false;
         }
         initInstrumentCache();
@@ -150,7 +152,8 @@ public class MIDISystemUtil
     
     public static boolean midiUnavailable() { return !midiAvailable; }
 
-    private @Nullable static URL getMXTuneSoundBankURL()
+    @Nullable
+    private static URL getMXTuneSoundBankURL()
     {
         URL file = MXTune.class.getResource("/assets/" + SOUND_FONT.getNamespace() + "/" + SOUND_FONT.getPath());
         LOGGER.info("Sound font path: {}", file);

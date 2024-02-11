@@ -26,10 +26,14 @@ public class MXRegistry
                                                          LOGGER.debug("InfoPanelType: {} Sync: {}" ,getName(obj), stage.getName())))
                          );
 
+    private MXRegistry() { /* NOOP */ }
+
+    @SuppressWarnings("unused")
     public static InfoPanelType getInfoPanelType(String name) {
         return Objects.requireNonNull(INFO_PANEL_REGISTRY.get().getValue(new ResourceLocation(name)));
     }
 
+    @SuppressWarnings("unused")
     public static InfoPanelType getInfoPanelType(ResourceLocation location) {
         return Objects.requireNonNull(INFO_PANEL_REGISTRY.get().getValue(location));
     }

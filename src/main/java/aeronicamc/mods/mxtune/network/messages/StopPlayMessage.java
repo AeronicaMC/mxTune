@@ -32,8 +32,8 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
     @Override
     public StopPlayMessage decode(PacketBuffer buffer)
     {
-        final int playId = buffer.readInt();
-        return new StopPlayMessage(playId);
+        final int playIdDecode = buffer.readInt();
+        return new StopPlayMessage(playIdDecode);
     }
 
     @Override

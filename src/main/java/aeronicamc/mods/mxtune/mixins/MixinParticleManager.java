@@ -32,6 +32,6 @@ public class MixinParticleManager
     @Inject(method = "renderParticles(Lcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer$Impl;Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/client/renderer/ActiveRenderInfo;FLnet/minecraft/client/renderer/culling/ClippingHelper;)V", at = @At("RETURN"), remap = false, require = 1)
     public void renderParticlesCallback(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper clippingHelper, CallbackInfo ci)
     {
-        RenderEvents.renderLast(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, clippingHelper);
+        RenderEvents.renderLast(pMatrixStack, pBuffer, pActiveRenderInfo, pPartialTicks, clippingHelper);
     }
 }

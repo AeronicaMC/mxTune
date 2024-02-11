@@ -17,20 +17,18 @@
 package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.MXTune;
+import aeronicamc.mods.mxtune.caps.player.PlayerNexusProvider;
 import aeronicamc.mods.mxtune.gui.Handler;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
 public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
 {
-    private static final Logger LOGGER = LogManager.getLogger();
     private String keyBindingDesc = "";
 
     public SendKeyMessage() { /* NOP */ }
@@ -40,8 +38,8 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
     @Override
     public SendKeyMessage decode(final PacketBuffer buffer)
     {
-        String keyBindingDesc = buffer.readUtf(64);
-        return new SendKeyMessage(keyBindingDesc);
+        String keyBindingDescDecode = buffer.readUtf(64);
+        return new SendKeyMessage(keyBindingDescDecode);
     }
 
     @Override
@@ -80,13 +78,13 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
         ctx.get().enqueueWork(()->{
             if ("ctrl-down".equalsIgnoreCase(message.keyBindingDesc))
             {
-                LOGGER.debug("ctrl-down");
-                //MusicOptionsUtil.setCtrlKey(player, true);
+                PlayerNexusProvider.getNexus(player).ifPresent(
+                            playerOptions -> playerOptions.setCtrlKey(true));
             }
             else if ("ctrl-up".equalsIgnoreCase(message.keyBindingDesc))
             {
-                LOGGER.debug("ctrl-up");
-                //MusicOptionsUtil.setCtrlKey(player, false);
+                PlayerNexusProvider.getNexus(player).ifPresent(
+                        playerOptions -> playerOptions.setCtrlKey(false));
             }
             else
                 PacketDispatcher.sendTo(new SendKeyMessage(message.keyBindingDesc), player);

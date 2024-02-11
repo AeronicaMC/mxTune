@@ -34,25 +34,30 @@ public class MML2PCM
         this.audioData = audioData;
     }
 
+    /**
+     *
+     * @return object instance to append method call. e.g. new MML2PCM(audioData).process();
+     */
+    @SuppressWarnings("resource")
     MML2PCM process()
     {
         // Generate PCM Audio Stream from MIDI sequence
-        getAudioData().ifPresent(audioData -> {
+        getAudioData().ifPresent(data -> {
             ClientAudio.Status status = ClientAudio.Status.PLAY;
             try
             {
-                if (ActiveAudio.needsMidiSequence(audioData.getPlayId()))
+                if (ActiveAudio.needsMidiSequence(data.getPlayId()))
                     throw new ModMidiException("SequenceProxy expired");
                 Midi2WavRenderer mw = new Midi2WavRenderer();
-                AudioInputStream pcmStream = mw.createPCMStream(ActiveAudio.getSequence(audioData.getPlayId()), audioData);
-                audioData.setAudioStream(pcmStream);
+                AudioInputStream pcmStream = mw.createPCMStream(ActiveAudio.getSequence(data.getPlayId()), data);
+                data.setAudioStream(pcmStream);
             } catch (ModMidiException | MidiUnavailableException e)
             {
                 status = ClientAudio.Status.ERROR;
                 LOGGER.error("MIDI to PCM process: ", e);
             } finally
             {
-                audioData.setStatus(status);
+                data.setStatus(status);
             }
         });
         return this;

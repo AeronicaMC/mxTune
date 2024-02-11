@@ -34,10 +34,10 @@ public class GroupCmdMessage extends AbstractMessage<GroupCmdMessage>
     @Override
     public GroupCmdMessage decode(final PacketBuffer buffer)
     {
-        final String pin = buffer.readUtf();
-        final Cmd cmd = buffer.readEnum(GroupCmdMessage.Cmd.class);
+        final String pinDecode = buffer.readUtf();
+        final Cmd cmdDecode = buffer.readEnum(GroupCmdMessage.Cmd.class);
         final int memberId = buffer.readInt();
-        return new GroupCmdMessage(pin, cmd, memberId);
+        return new GroupCmdMessage(pinDecode, cmdDecode, memberId);
     }
 
     @Override

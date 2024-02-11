@@ -26,12 +26,15 @@ package aeronicamc.mods.mxtune.render;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import org.lwjgl.opengl.GL12;
 
 import java.util.OptionalDouble;
 
+import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL12.GL_QUADS;
+
 public class ModRenderType extends RenderType
 {
+    @SuppressWarnings("unused")
     private ModRenderType(String name, VertexFormat vertexFormat, int pi3, int pi4, boolean pi5, boolean pb6, Runnable runnable7, Runnable runnable8)
     {
         super(name, vertexFormat, pi3, pi4, pi5, pb6, runnable7, runnable8);
@@ -42,7 +45,7 @@ public class ModRenderType extends RenderType
     private static final LineState FAT_LINES = new LineState(OptionalDouble.of(4.0D));
 
     public static final RenderType THICK_LINES = create("thick_select_lines",
-                                                          DefaultVertexFormats.POSITION_COLOR, GL12.GL_LINES, 256,
+                                                          DefaultVertexFormats.POSITION_COLOR, GL_LINES, 256,
                                                           State.builder().setLineState(FAT_LINES)
                                                                 .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                                                                 .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
@@ -50,8 +53,9 @@ public class ModRenderType extends RenderType
                                                                 .setWriteMaskState(COLOR_DEPTH_WRITE)
                                                                 .createCompositeState(false));
 
+    @SuppressWarnings("unused")
     public static final RenderType OVERLAY_LINES = create("overlay_lines",
-                                                          DefaultVertexFormats.POSITION_COLOR, GL12.GL_LINES, 256,
+                                                          DefaultVertexFormats.POSITION_COLOR, GL_LINES, 256,
                                                           State.builder().setLineState(FAT_LINES)
                                                                   .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                                                                   .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
@@ -63,7 +67,7 @@ public class ModRenderType extends RenderType
                                                                   .createCompositeState(false));
 
     public static final RenderType TRANSPARENT_QUADS_NO_TEXTURE = create("transparent_quads_no_texture",
-                                                                         DefaultVertexFormats.POSITION_COLOR, GL12.GL_QUADS, 256,
+                                                                         DefaultVertexFormats.POSITION_COLOR, GL_QUADS, 256,
                                                                          State.builder()
                                                                                  .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                                                                                  .setTransparencyState(TRANSLUCENT_TRANSPARENCY)

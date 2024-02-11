@@ -278,7 +278,7 @@ public class ClientAudio
     }
 
     // TODO: Review for race conditions, test SoundEngine for active source instances (ISound) and resubmit or
-    // TODO:  not depending on result (ensure acquisition of stream, and/or confirm release).
+    // not depending on result (ensure acquisition of stream, and/or confirm release).
     public static void prioritizeAndLimitSources()
     {
         int[] priority = new int[1];
@@ -296,13 +296,13 @@ public class ClientAudio
             EntityVenueState sourceVenueState = MusicVenueHelper.getEntityVenueState(level, audioData.getEntityId());
 
             if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
-                audioData.yield();
+                audioData.yieldStream();
             else if (!playerVenueState.equals(sourceVenueState))
-                audioData.yield();
+                audioData.yieldStream();
             else if (((priority[0] < availableStreams[0]) && (status == Status.YIELD)) && playerVenueState.equals(sourceVenueState))
                 audioData.resume();
             else if (priority[0] > availableStreams[0])
-                audioData.yield();
+                audioData.yieldStream();
 
             if (PLAYING_STATUSES.contains(audioData.getStatus()))
                 priority[0]++;

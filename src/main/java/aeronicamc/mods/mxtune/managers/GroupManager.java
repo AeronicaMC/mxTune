@@ -293,7 +293,6 @@ public class GroupManager
 
     private static void removeGroup(Group group)
     {
-        PlayManager.stopGroupMusic(group.getLeader());
         removeGroupsMusicText(group.getLeader());
         removeGroupsPlayState(group.getLeader());
         groups.remove(group.getGroupId());

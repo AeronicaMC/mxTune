@@ -51,13 +51,13 @@ public class CreateIMusicMessage extends AbstractMessage<CreateIMusicMessage>
     @Override
     public CreateIMusicMessage decode(final PacketBuffer buffer)
     {
-        final String musicTitle = buffer.readUtf();
-        final byte[] extraData = buffer.readByteArray();
-        String musicText = "";
-        musicText = MultiPacketStringHelper.readLongString(buffer);
-        final String[] partInstrumentIds = nbtToStringArray(buffer.readNbt());
-        final MusicType musicType = buffer.readEnum(MusicType.class);
-        return new CreateIMusicMessage(musicTitle, extraData, musicText != null ? musicText : "", partInstrumentIds, musicType, musicText == null);
+        final String musicTitleDecode = buffer.readUtf();
+        final byte[] extraDataDecode = buffer.readByteArray();
+        String musicTextDecode = "";
+        musicTextDecode = MultiPacketStringHelper.readLongString(buffer);
+        final String[] partInstrumentIdsDecode = nbtToStringArray(buffer.readNbt());
+        final MusicType musicTypeDecode = buffer.readEnum(MusicType.class);
+        return new CreateIMusicMessage(musicTitleDecode, extraDataDecode, musicTextDecode != null ? musicTextDecode : "", partInstrumentIdsDecode, musicTypeDecode, musicTextDecode == null);
     }
 
     @Override

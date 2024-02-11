@@ -31,8 +31,8 @@ public class AudiblePingPlayerMessage extends AbstractMessage<AudiblePingPlayerM
     @Override
     public AudiblePingPlayerMessage decode(PacketBuffer buffer)
     {
-        final ResourceLocation soundEventResource = buffer.readResourceLocation();
-        final SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(soundEventResource);
+        final ResourceLocation resourceLocation = buffer.readResourceLocation();
+        final SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(resourceLocation);
         return soundEvent !=null ? new AudiblePingPlayerMessage(soundEvent) : new AudiblePingPlayerMessage(ModSoundEvents.FAILURE.get());
     }
 
@@ -45,7 +45,6 @@ public class AudiblePingPlayerMessage extends AbstractMessage<AudiblePingPlayerM
                 SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(message.soundEventResource);
                 if (pPlayer != null && soundEvent != null)
                 {
-//                    pPlayer.displayClientMessage(new TranslationTextComponent("container.isLocked"), true);
                     pPlayer.playNotifySound(soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 }
             });

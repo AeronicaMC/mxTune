@@ -37,15 +37,15 @@ public class SyncGroupMemberState extends AbstractMessage<SyncGroupMemberState>
     @Override
     public SyncGroupMemberState decode(PacketBuffer buffer)
     {
-        final Map<Integer, Integer> memberState = new HashMap<>();
+        final Map<Integer, Integer> memberStateDecode = new HashMap<>();
         final int memberCount = buffer.readInt();
         for (int member = 0 ; member < memberCount; member++)
         {
             int memberId = buffer.readInt();
             int state = buffer.readVarInt();
-            memberState.put(memberId, state);
+            memberStateDecode.put(memberId, state);
         }
-        return new SyncGroupMemberState(memberState);
+        return new SyncGroupMemberState(memberStateDecode);
     }
 
     @Override

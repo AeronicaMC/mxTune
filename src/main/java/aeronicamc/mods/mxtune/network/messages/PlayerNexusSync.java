@@ -27,9 +27,9 @@ public class PlayerNexusSync extends AbstractMessage<PlayerNexusSync>
     @Override
     public PlayerNexusSync decode(final PacketBuffer buffer)
     {
-        final int playId = buffer.readInt();
-        final int entityId = buffer.readInt();
-        return new PlayerNexusSync(playId, entityId);
+        final int playIdDecode = buffer.readInt();
+        final int entityIdDecode = buffer.readInt();
+        return new PlayerNexusSync(playIdDecode, entityIdDecode);
     }
 
     @Override

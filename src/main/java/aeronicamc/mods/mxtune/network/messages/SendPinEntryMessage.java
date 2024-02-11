@@ -26,8 +26,8 @@ public class SendPinEntryMessage extends AbstractMessage<SendPinEntryMessage>
     @Override
     public SendPinEntryMessage decode(PacketBuffer buffer)
     {
-        final String pin = buffer.readUtf();
-        return new SendPinEntryMessage(pin);
+        final String pinDecode = buffer.readUtf();
+        return new SendPinEntryMessage(pinDecode);
     }
 
     @Override

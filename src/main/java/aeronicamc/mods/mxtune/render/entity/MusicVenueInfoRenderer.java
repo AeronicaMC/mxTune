@@ -1,6 +1,5 @@
 package aeronicamc.mods.mxtune.render.entity;
 
-import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
 import aeronicamc.mods.mxtune.entity.MusicVenueInfoEntity;
 import aeronicamc.mods.mxtune.render.ModRenderType;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -31,7 +30,6 @@ import net.minecraft.util.text.TextFormatting;
  */
 public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
 {
-    EntityVenueState sourceVenueState;
     public MusicVenueInfoRenderer(EntityRendererManager rendererManager)
     {
         super(rendererManager);
@@ -65,7 +63,6 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
         Matrix3f matrix3f = matrixStackEntry.normal();
         float f = (-width) / 2.0F;
         float f1 = (-height) / 2.0F;
-        float f2 = 0.5F;
         float f3 = backSprite.getU0();
         float f4 = backSprite.getU1();
         float f5 = backSprite.getV0();
@@ -179,5 +176,5 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
         vertexBuilder.vertex(matrix4fPose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).uv2(pLightMap).normal(matrix3fNormal, pNormalX, pNormalY, pNormalZ).endVertex();
     }
 
-    private void dummyPress() {}
+    private void dummyPress() { /* NOOP */ }
 }

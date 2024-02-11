@@ -22,13 +22,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.HangingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.Direction;
@@ -53,12 +51,15 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 
-import static aeronicamc.mods.mxtune.render.ModRenderType.FULL_BRIGHT_LIGHT_MAP;
+import static aeronicamc.mods.mxtune.render.ModRenderType.*;
 
+@SuppressWarnings("deprecation")
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
 public class RenderEvents
 {
     static final Minecraft mc = Minecraft.getInstance();
+
+    private RenderEvents() { /* NOOP */ }
 
     @SubscribeEvent
     public static void event(ItemTooltipEvent event)
@@ -99,7 +100,7 @@ public class RenderEvents
 
             if (!blockState.isAir(level, blockPos) && level.getWorldBorder().isWithinBounds(blockPos))
             {
-                final IVertexBuilder ivertexBuilder = renderTypeBuffer.getBuffer(ModRenderType.THICK_LINES);
+                final IVertexBuilder ivertexBuilder = renderTypeBuffer.getBuffer(THICK_LINES);
                 RenderHelper.renderHitOutline(level, matrixStack, ivertexBuilder, activeRenderInfo.getEntity(), camera.x(), camera.y(), camera.z(), blockPos, blockState);
             }
         }
@@ -121,9 +122,9 @@ public class RenderEvents
                     final HangingEntity infoEntity = new MusicVenueInfoEntity(useContext.getLevel(), placementPos, facing);
                     if (infoEntity.survives())
                     {
-                        final IVertexBuilder vertexBuilder1 = renderTypeBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
+                        final IVertexBuilder vertexBuilder1 = renderTypeBuffer.getBuffer(TRANSPARENT_QUADS_NO_TEXTURE);
                         RenderHelper.renderFaces(matrixStack, vertexBuilder1, infoEntity.getBoundingBox().inflate(0.001D), camera.x(), camera.y(), camera.z(), 1.0F, 0.0F, 1.0F, 0.4F);
-                        final IVertexBuilder vertexBuilder2 = renderTypeBuffer.getBuffer(ModRenderType.LINES);
+                        final IVertexBuilder vertexBuilder2 = renderTypeBuffer.getBuffer(LINES);
                         RenderHelper.renderEdges(matrixStack, vertexBuilder2, infoEntity.getBoundingBox().inflate(0.001D), camera.x(), camera.y(), camera.z(), 1.0F, 0.0F, 1.0F, 0.4F);
                     }
                 }
@@ -140,7 +141,6 @@ public class RenderEvents
         if (!(mc.player.inventory.getSelected().getItem() instanceof MusicVenueToolItem)) return;
         if (event.isCancelable()) event.setCanceled(true);
 
-        final PlayerEntity player = mc.player;
         final EntityRayTraceResult entityRayTraceResult = event.getTarget();
         final IRenderTypeBuffer renderTypeBuffer = event.getBuffers();
         final ActiveRenderInfo activeRenderInfo = event.getInfo();
@@ -148,7 +148,7 @@ public class RenderEvents
         final Vector3d camera = activeRenderInfo.getPosition();
 
         // Draw the entity bounding box when using the MusicVenueToolItem and looking at en entity
-        IVertexBuilder vertexBuilder2 = renderTypeBuffer.getBuffer(ModRenderType.LINES);
+        IVertexBuilder vertexBuilder2 = renderTypeBuffer.getBuffer(LINES);
         RenderHelper.renderEdges(matrixStack, vertexBuilder2, entityRayTraceResult.getEntity().getBoundingBox().inflate(0.001D), camera.x(), camera.y(), camera.z(), 1.0F, 0.0F, 1.0F, 0.4F);
     }
 
@@ -159,8 +159,7 @@ public class RenderEvents
             return;
         if (mc.options.renderDebug) return;
 
-        final PlayerEntity player = mc.player;
-        final ItemStack itemStack = player.inventory.getSelected();
+        final ItemStack itemStack = mc.player.inventory.getSelected();
 
         // Display basic info about the instrument and tune. Optionally, displays some debug info depending on MXTune.isDevEnv flag.
         // Based on the toast renderer for testing some ideas.
@@ -197,11 +196,9 @@ public class RenderEvents
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof MusicVenueToolItem)
         {
             final MatrixStack pPoseStack = event.getMatrixStack();
-            final ActiveRenderInfo activeRenderInfo = mc.gameRenderer.getMainCamera();
             final RayTraceResult raytraceresult = mc.hitResult;
-            final EntityVenueState bvs;
             final Vector3d vector3d;
-            final EntityVenueState evs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
+            final EntityVenueState evs = MusicVenueHelper.getEntityVenueState(mc.player.level, mc.player.getId());
             final ITextComponent blockName;
             BlockPos blockpos = BlockPos.ZERO;
 
@@ -214,12 +211,9 @@ public class RenderEvents
                 vector3d = ((EntityRayTraceResult) raytraceresult).getEntity().getPosition(mc.getFrameTime());
                 blockpos = new BlockPos(vector3d.x, vector3d.y, vector3d.z);
             }
-            bvs = MusicVenueHelper.getBlockVenueState(player.level, blockpos);
 
             ToolState.Type[] stateName = {ToolState.Type.START};
-            ToolManager.getToolOpl(player).ifPresent(tool-> {
-                stateName[0] = tool.getToolState();
-            });
+            ToolManager.getToolOpl(mc.player).ifPresent(tool-> stateName[0] = tool.getToolState());
 
             ITextComponent testText = new TranslationTextComponent(stateName[0].getTranslationKey()).withStyle(TextFormatting.WHITE).append(" ").append(evs.inVenue() ? evs.getVenue().getVenueAABB().getCenter().toString() : "");
             int offset = Math.max(mc.font.width(testText) + 40, WIDTH);
@@ -243,7 +237,7 @@ public class RenderEvents
         }
     }
 
-    static void renderGroupStatusPlacard(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
+    static void renderGroupStatusPlacard(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {
         if (mc.player != null && mc.level != null && GroupClient.hasGroups())
         {
@@ -252,7 +246,6 @@ public class RenderEvents
             List<Entity> nearLivingEntities = mc.level.getEntities(null, mc.player.getBoundingBox().inflate(48));
             if (!nearLivingEntities.isEmpty()) {
                 nearLivingEntities.stream().filter(p -> pClippingHelper.isVisible(p.getBoundingBoxForCulling())).forEach(livingEntity -> {
-                    int packedLight = FULL_BRIGHT_LIGHT_MAP; //mc.getEntityRenderDispatcher().getPackedLightCoords(livingEntity, pPartialTicks);
 
                     if (GroupClient.isGrouped(livingEntity.getId())) {
                         placardStack.setDamageValue(GroupClient.getPlacardState(livingEntity.getId()));
@@ -264,7 +257,7 @@ public class RenderEvents
                         pMatrixStack.mulPose(RenderHelper.getYAxisRotation(pActiveRenderInfo.rotation())); // imperfect
                         pMatrixStack.scale(0.5F, 0.5F, 0.5F);
 
-                        Minecraft.getInstance().getItemRenderer().renderStatic(placardStack, ItemCameraTransforms.TransformType.FIXED, packedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer);
+                        Minecraft.getInstance().getItemRenderer().renderStatic(placardStack, ItemCameraTransforms.TransformType.FIXED, FULL_BRIGHT_LIGHT_MAP, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer);
                         pMatrixStack.popPose();
                     }
                     pBuffer.endBatch();
@@ -274,9 +267,9 @@ public class RenderEvents
     }
 
     // It's absolutely Fabulous... or maybe not, but at least in Fabulous Graphics mode it's not bad.
-    public static void renderLast(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
+    public static void renderLast(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {
-        MusicVenueRenderer.render(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
-        renderGroupStatusPlacard(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
+        MusicVenueRenderer.render(pMatrixStack, pBuffer, pActiveRenderInfo, pClippingHelper);
+        renderGroupStatusPlacard(pMatrixStack, pBuffer, pActiveRenderInfo, pPartialTicks, pClippingHelper);
     }
 }

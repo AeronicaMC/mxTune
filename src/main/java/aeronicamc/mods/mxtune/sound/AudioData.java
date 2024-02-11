@@ -251,7 +251,7 @@ public class AudioData
         ClientAudio.stop(iSound);
     }
 
-    void yield()
+    void yieldStream()
     {
         if (ClientAudio.isPlayingStatus(status))
         {
@@ -296,7 +296,7 @@ public class AudioData
     private Vector3d getEntityPosition()
     {
         Entity entity;
-        if ((mc.player != null) && (mc.player.level != null) && (((entity = mc.player.level.getEntity(entityId))) != null))
+        if ((mc.player != null) && (mc.player.level != null) && ((entity = mc.player.level.getEntity(entityId)) != null))
         {
             return entity.getPosition(mc.getDeltaFrameTime());
         }

@@ -22,8 +22,8 @@ public class OpenScreenMessage extends AbstractMessage<OpenScreenMessage>
     @Override
     public OpenScreenMessage decode(final PacketBuffer buffer)
     {
-        final SM screen = buffer.readEnum(SM.class);
-        return new OpenScreenMessage(screen);
+        final SM screenDecode = buffer.readEnum(SM.class);
+        return new OpenScreenMessage(screenDecode);
     }
 
     @Override

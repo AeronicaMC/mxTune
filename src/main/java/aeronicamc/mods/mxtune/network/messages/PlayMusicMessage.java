@@ -44,13 +44,13 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
     @Override
     public PlayMusicMessage decode(PacketBuffer buffer)
     {
-        final int playId = buffer.readVarInt();
-        final String dateTimeServer = buffer.readUtf();
-        final int duration = buffer.readVarInt();
-        final int secondsToSkip = buffer.readVarInt();
-        final int entityId = buffer.readVarInt();
+        final int playIdDecode = buffer.readVarInt();
+        final String dateTimeServerDecode = buffer.readUtf();
+        final int durationDecode = buffer.readVarInt();
+        final int secondsToSkipDecode = buffer.readVarInt();
+        final int entityIdDecode = buffer.readVarInt();
         final String mml = stringHelper.readLongUtf(buffer);
-        return new PlayMusicMessage(playId, dateTimeServer, duration, secondsToSkip, entityId, mml);
+        return new PlayMusicMessage(playIdDecode, dateTimeServerDecode, durationDecode, secondsToSkipDecode, entityIdDecode, mml);
     }
 
     @Override

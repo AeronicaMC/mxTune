@@ -51,7 +51,7 @@ public class SyncGroupsMessage extends AbstractMessage<SyncGroupsMessage>
     @Override
     public SyncGroupsMessage decode(PacketBuffer buffer)
     {
-        final Map<Integer, Group> groupMap = new HashMap<>();
+        final Map<Integer, Group> groupMapDecode = new HashMap<>();
         final int groupCount = buffer.readInt();
         for (int g = 0 ; g < groupCount; g++)
         {
@@ -70,9 +70,9 @@ public class SyncGroupsMessage extends AbstractMessage<SyncGroupsMessage>
                 final int member = buffer.readInt();
                 group.getMembers().add(member);
             }
-            groupMap.put(group.getGroupId(), group);
+            groupMapDecode.put(group.getGroupId(), group);
         }
-        return new SyncGroupsMessage(groupMap);
+        return new SyncGroupsMessage(groupMapDecode);
     }
 
     @Override

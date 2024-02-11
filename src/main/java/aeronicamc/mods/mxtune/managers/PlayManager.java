@@ -172,16 +172,15 @@ public final class PlayManager
     {
         Group group = GroupManager.getGroup(membersId);
         int playId = INVALID;
-        if (group.isValid())
-            if (group.getPlayId() == INVALID)
-            {
+        if (group.isValid()) {
+            if (group.getPlayId() == INVALID) {
                 playId = getNextPlayID();
                 group.setPlayId(playId);
                 GroupManager.sync();
-            }
-            else {
+            } else {
                 playId = group.getPlayId();
             }
+        }
         return playId;
     }
 
@@ -189,7 +188,7 @@ public final class PlayManager
     {
         int playId = getNextPlayID();
         int entityId = playerIn.getId();
-        // TODO: See if we can attach the music source to a player, or maybe make the instrument the source!?
+        // META: See if we can attach the music source to a player, or maybe make the instrument the source!?
         addActivePlayId(entityId, playId, musicText, duration);
         PlayMusicMessage packetPlaySolo = new PlayMusicMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), duration, 0, entityId, musicText);
         PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
@@ -251,11 +250,6 @@ public final class PlayManager
                 stopPlayId(ActiveTune.getPlayIdForEntity(entityId), entityId);
             }
         }
-    }
-
-    static void stopGroupMusic(int entityId)
-    {
-        // TODO complete group Music Management
     }
 
     public static int getEntitiesPlayId(int entityId)

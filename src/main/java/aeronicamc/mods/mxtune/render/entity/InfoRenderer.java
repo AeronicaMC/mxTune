@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Random;
 
+@SuppressWarnings("unused")
 public class InfoRenderer implements AutoCloseable
 {
     private static InfoRenderer instance;
@@ -106,7 +107,7 @@ public class InfoRenderer implements AutoCloseable
         private final ResourceLocation dynamicTextureLocation;
         private final PixelFu pixelFu;
         private EntityVenueState sourceVenueState = EntityVenueState.INVALID;
-        private int count = 0;
+        private int count;
 
         private Instance(MusicVenueInfoEntity pInfoEntity)
         {
@@ -208,10 +209,10 @@ public class InfoRenderer implements AutoCloseable
         private int randomColor()
         {
             int x = random.nextInt();
-            return ((0xFF000000)) |       //AA______
-                    ((x & 0x00FF0000) >> 16) | //______RR
-                    ((x & 0x0000FF00)) |       //____GG__
-                    ((x & 0x000000FF) << 16);  //__BB____
+            return 0xFF000000 |                 //AA______
+                    ((x & 0x00FF0000) >> 16) |  //______RR
+                    (x & 0x0000FF00) |          //____GG__
+                    ((x & 0x000000FF) << 16);   //__BB____
         }
 
         private IVertexBuilder getInfoRenderVertexBuilder(IRenderTypeBuffer renderTypeBuffer)

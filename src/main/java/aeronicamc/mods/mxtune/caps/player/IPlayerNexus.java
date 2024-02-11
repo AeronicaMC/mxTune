@@ -12,6 +12,10 @@ import javax.annotation.Nullable;
  */
 public interface IPlayerNexus
 {
+    void setCtrlKey(boolean state);
+
+    boolean getCtrlKey();
+
     void setPlayId(int playId);
 
     int getPlayId();
