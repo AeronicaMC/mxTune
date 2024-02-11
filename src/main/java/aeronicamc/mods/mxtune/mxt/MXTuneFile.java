@@ -182,11 +182,11 @@ public class MXTuneFile implements Serializable
     public String toString()
     {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("mxtVersion", mxtVersion)
-                .append("title", title)
-                .append("author", author)
-                .append("source", source)
-                .append("duration", duration)
+                .append(TAG_MXT_VERSION, mxtVersion)
+                .append(TAG_TITLE, title)
+                .append(TAG_AUTHOR, author)
+                .append(TAG_SOURCE, source)
+                .append(TAG_DURATION, duration)
                 .append("parts", parts)
                 .toString();
     }

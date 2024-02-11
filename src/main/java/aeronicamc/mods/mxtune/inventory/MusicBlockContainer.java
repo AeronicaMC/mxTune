@@ -214,11 +214,6 @@ public class MusicBlockContainer extends Container
         return playerEntity;
     }
 
-    public BlockPos getBlockPos()
-    {
-        return blockPos;
-    }
-
     public boolean getLockedState()
     {
         return (getSignals() & 0x0008) > 0;

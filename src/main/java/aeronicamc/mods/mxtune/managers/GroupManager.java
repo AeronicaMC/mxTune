@@ -144,14 +144,10 @@ public class GroupManager
     {
         synchronized (groups)
         {
-            boolean[] result = new boolean[1];
+            boolean[] result = { false };
             groups.values().stream().filter(group -> group.isMember(memberId)).forEach(group -> {
-                   if (tryRemoveMember(group, memberId))
-                       result[0] = true;
-                   else if (tryRemoveLeaderPromoteNext(group, memberId))
-                       result[0] = true;
-                   else if (tryRemoveGroupIfLast(group))
-                       result[0] = true;
+                if (tryRemoveMember(group, memberId) || tryRemoveLeaderPromoteNext(group, memberId) || tryRemoveGroupIfLast(group))
+                    result[0] = true;
                });
             if (result[0])
             {

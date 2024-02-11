@@ -28,23 +28,22 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 
-@SuppressWarnings("FieldMayBeFinal")
-public class KeyHandler
+public enum KeyHandler
 {
+    INSTANCE;
     private static final Minecraft mc = Minecraft.getInstance();
-    private static class KeyHandlerHolder {private static final KeyHandler INSTANCE = new KeyHandler();}
-    public static KeyHandler getInstance() {return KeyHandlerHolder.INSTANCE;}
-
-    private KeyBinding keyOpenGroupGUI = new KeyBinding("key.mxtune.open_group", GLFW.GLFW_KEY_J, Reference.MOD_ID);
-    private KeyBinding keyOpenMusicOptionsGUI = new KeyBinding("key.mxtune.open_music_options", GLFW.GLFW_KEY_P, Reference.MOD_ID);
+    private final KeyBinding keyOpenGroupGUI = new KeyBinding("key.mxtune.open_group", GLFW.GLFW_KEY_J, Reference.MOD_ID);
+    private final KeyBinding keyOpenMusicOptionsGUI = new KeyBinding("key.mxtune.open_music_options", GLFW.GLFW_KEY_P, Reference.MOD_ID);
     private boolean ctrlKeyDown = false;
 
-    private KeyHandler()
+    public static KeyHandler getInstance() { return INSTANCE; }
+
+    KeyHandler()
     {
         ClientRegistry.registerKeyBinding(keyOpenGroupGUI);
         if (MXTune.isDevEnv()) // FUTURE: Music Options
             ClientRegistry.registerKeyBinding(keyOpenMusicOptionsGUI);
-        mc.options.load();
+        Minecraft.getInstance().options.load();
     }
 
     @SubscribeEvent

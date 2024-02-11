@@ -7,13 +7,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @SuppressWarnings("unused")
-public class ActionGet implements ISelectorAction
+public enum ActionGet implements ISelectorAction
 {
-    public static final ActionGet INSTANCE = new ActionGet();
-
+    //public static final ActionGet INSTANCE = new ActionGet();
+    INSTANCE;
     private Path path;
     private MXTuneFile mxTuneFile;
     private SELECTOR selector = SELECTOR.CANCEL;
+
+    ActionGet() { /* NOOP */ }
 
     @Override
     public void select(Path path)

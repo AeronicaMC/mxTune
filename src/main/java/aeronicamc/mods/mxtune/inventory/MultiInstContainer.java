@@ -140,7 +140,6 @@ public class MultiInstContainer extends Container
     @Override
     public void removeSlotListener(IContainerListener pListener)
     {
-        System.out.println("removeSlotListener!");
         super.removeSlotListener(pListener);
     }
 
