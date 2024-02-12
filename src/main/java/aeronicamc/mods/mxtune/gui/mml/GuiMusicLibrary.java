@@ -5,9 +5,7 @@ import aeronicamc.mods.mxtune.caches.FileHelper;
 import aeronicamc.mods.mxtune.gui.MXScreen;
 import aeronicamc.mods.mxtune.gui.ModGuiHelper;
 import aeronicamc.mods.mxtune.gui.TextColorFg;
-import aeronicamc.mods.mxtune.gui.widget.MXButton;
-import aeronicamc.mods.mxtune.gui.widget.MXLabel;
-import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
+import aeronicamc.mods.mxtune.gui.widget.*;
 import aeronicamc.mods.mxtune.gui.widget.list.FileDataList;
 import aeronicamc.mods.mxtune.gui.widget.list.PartList;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
@@ -36,6 +34,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static aeronicamc.mods.mxtune.gui.ModGuiHelper.*;
 import static net.minecraftforge.fml.LogicalSide.CLIENT;
 
 public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
@@ -85,9 +84,11 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
     private final List<MXTunePart> tuneParts = new ArrayList<>();
 
     // playing
-    private final MXButton buttonPlay = new MXButton(new TranslationTextComponent("gui.mxtune.button.play"), p -> playMusic());
+    private MXButton buttonPlay;
     private boolean isPlaying;
     private int playId;
+
+    private final GuiHelpButton buttonGuiHelp = new GuiHelpButton(p -> helpToggled());
 
     public GuiMusicLibrary(Screen parent)
     {
@@ -190,11 +191,12 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         addButton(SortType.Z_TO_A.button);
 
         int buttonTop = height - 25;
-        int xOpen = (this.width /2) - ((75 * 5)/2) - (buttonMargin *5);
+        int xOpen = (this.width /2) - (((75 * 5)+20)/2) - (buttonMargin *5);
         int xRefresh = xOpen + buttonWidth + buttonMargin;
         int xPlay = xRefresh + buttonWidth + buttonMargin;
         int xDone = xPlay + buttonWidth + buttonMargin;
         int xCancel = xDone + buttonWidth + buttonMargin;
+        int xHelp = xCancel + buttonWidth + buttonMargin;
         MXButton mxbOpenFolder = new MXButton(new TranslationTextComponent("gui.mxtune.button.open_folder"), open->openFolder());
         mxbOpenFolder.setLayout(xOpen, buttonTop, 75, 20);
         mxbOpenFolder.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.open_folder").withStyle(TextFormatting.YELLOW));
@@ -208,6 +210,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         mxbRefreshFiles.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.refresh.help01").withStyle(TextFormatting.WHITE));
         addButton(mxbRefreshFiles);
 
+        buttonPlay = new MXButton(new TranslationTextComponent("gui.mxtune.button.play"), p -> playMusic());
         buttonPlay.setLayout(xPlay, buttonTop, 75, 20);
         addButton(buttonPlay);
 
@@ -218,6 +221,8 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         MXButton mxbCancelDone = new MXButton(new TranslationTextComponent("gui.cancel"), cancel->cancelDone());
         mxbCancelDone.setLayout(xCancel, buttonTop, 75, 20);
         addButton(mxbCancelDone);
+        buttonGuiHelp.setLayout(xHelp, buttonTop, 20, 20);
+        addButton(buttonGuiHelp);
 
         addWidget(fileDataListWidget);
         addWidget(partListWidget);
@@ -237,6 +242,8 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
     private void updateState()
     {
         buttonPlay.setMessage(isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play"));
+        buttonGuiHelp.addHooverText(true, HELP_HELP01);
+        buttonGuiHelp.addHooverText(false, buttonGuiHelp.isHelpEnabled() ? HELP_HELP02 : HELP_HELP03);
         updatePartList();
     }
 
@@ -267,6 +274,13 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
             updatePartList();
             sorted = false;
         }
+    }
+
+    private void helpToggled() {
+        buttonGuiHelp.setHelpEnabled(!buttonGuiHelp.isHelpEnabled());
+        children.stream().filter(IHooverText.class::isInstance)
+                .forEach(b -> ((IHooverText) b).setHooverTextOverride(buttonGuiHelp.isHelpEnabled()));
+        updateState();
     }
 
     private void reloadFiles()
