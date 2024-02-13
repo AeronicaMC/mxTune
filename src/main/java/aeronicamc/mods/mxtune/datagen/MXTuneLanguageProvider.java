@@ -144,7 +144,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.plus", "+");
         addGuiText("button.plus.help01", "Add an Instrument Part Tab at the end (right most).");
         addGuiText("button.refresh", "Refresh");
-        addGuiText("button.refresh.help01", "Only needed if the list does now refresh automatically after placing files into the folder.");
+        addGuiText("button.refresh.help01", "Click if the list doesn't refresh automatically after placing files into the folder.");
         addGuiText("button.clipboard_Copy_to", "Copy");
         addGuiText("button.clipboard_paste_from", "Paste");
         addGuiText("button.clipboard_paste_from.help01", "Paste MML in Mabinogi Clipboard Format.");

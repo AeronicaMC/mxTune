@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui;
 
+import aeronicamc.mods.mxtune.gui.widget.GuiHelpButton;
 import aeronicamc.mods.mxtune.gui.widget.IHooverText;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -40,7 +41,8 @@ public class ModGuiHelper
     {
         widgets.stream()
                 .filter(widget -> widget instanceof IHooverText && ((IHooverText) widget).isMouseOverWidget(mouseX, mouseY)
-                        && (Screen.hasShiftDown() || ((IHooverText) widget).isHooverTextOverride()))
+                        && (Screen.hasShiftDown() || ((IHooverText) widget).isHooverTextOverride()) ||
+                        (widget instanceof GuiHelpButton && ((IHooverText) widget).isMouseOverWidget(mouseX, mouseY)))
                 .forEach(widget -> guiScreen.renderWrappedToolTip(poseStack,
                         ((IHooverText) widget).getHooverTexts(),
                         (int) mouseX, (int) mouseY, Minecraft.getInstance().font));

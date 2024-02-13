@@ -5,9 +5,7 @@ import aeronicamc.mods.mxtune.caches.FileHelper;
 import aeronicamc.mods.mxtune.gui.MXScreen;
 import aeronicamc.mods.mxtune.gui.ModGuiHelper;
 import aeronicamc.mods.mxtune.gui.TextColorFg;
-import aeronicamc.mods.mxtune.gui.widget.MXButton;
-import aeronicamc.mods.mxtune.gui.widget.MXLabel;
-import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
+import aeronicamc.mods.mxtune.gui.widget.*;
 import aeronicamc.mods.mxtune.gui.widget.list.PathList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
@@ -28,6 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static aeronicamc.mods.mxtune.gui.ModGuiHelper.*;
 import static net.minecraftforge.fml.LogicalSide.CLIENT;
 
 public class GuiFileImporter extends MXScreen
@@ -70,6 +69,8 @@ public class GuiFileImporter extends MXScreen
 
     private final DirectoryWatcher watcher;
     private boolean watcherStarted = false;
+
+    private final GuiHelpButton buttonGuiHelp = new GuiHelpButton(p -> helpToggled());
 
     public GuiFileImporter(Screen parent)
     {
@@ -143,7 +144,12 @@ public class GuiFileImporter extends MXScreen
 
         titleLabel = new MXLabel(font, (width - font.width(title)) / 2, 5, font.width(title), entryHeight, title, TextColorFg.WHITE);
         pathListWidget.setLayout(left, listTop, listWidth, listHeight);
-        this.pathListWidget.setCallBack((entry, doubleClicked) -> selectedEntry = entry);
+        this.pathListWidget.setCallBack((entry, doubleClicked) -> {
+            selectedEntry = entry;
+            if (doubleClicked)
+                selectDone(true);
+            updateState();
+        });
 
         ITextComponent searchLabelText = new TranslationTextComponent("gui.mxtune.label.search");
         int searchLabelWidth = font.width(searchLabelText) + 4;
@@ -166,10 +172,11 @@ public class GuiFileImporter extends MXScreen
         addButton(SortType.Z_TO_A.button);
 
         int buttonTop = height - 25;
-        int xOpen = (this.width /2) - 75 * 2;
-        int xRefresh = xOpen + 75;
-        int xDone = xRefresh + 75;
-        int xCancel = xDone + 75;
+        int xOpen = (this.width /2) - (((buttonWidth * 4)+20)/2) - (buttonMargin *4);
+        int xRefresh = xOpen + buttonWidth + buttonMargin;
+        int xDone = xRefresh + buttonWidth + buttonMargin;
+        int xCancel = xDone + buttonWidth + buttonMargin;
+        int xHelp = xCancel + buttonWidth + buttonMargin;
         MXButton mxbOpenFolder = new MXButton(new TranslationTextComponent("gui.mxtune.button.open_folder"), open->openFolder());
         mxbOpenFolder.setLayout(xOpen, buttonTop, 75, 20);
         mxbOpenFolder.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.open_folder").withStyle(TextFormatting.YELLOW));
@@ -184,18 +191,21 @@ public class GuiFileImporter extends MXScreen
 
         addButton(mxbRefreshFiles);
 
-        MXButton mxbSelectDone = new MXButton(new TranslationTextComponent("gui.mxtune.button.select"), select->selectDone());
+        MXButton mxbSelectDone = new MXButton(new TranslationTextComponent("gui.mxtune.button.select"), select->selectDone(false));
         mxbSelectDone.setLayout(xDone, buttonTop, 75, 20);
         addButton(mxbSelectDone);
 
         MXButton mxbCancelDone = new MXButton(new TranslationTextComponent("gui.cancel"), cancel->cancelDone());
         mxbCancelDone.setLayout(xCancel, buttonTop, 75, 20);
         addButton(mxbCancelDone);
+        buttonGuiHelp.setLayout(xHelp, buttonTop, 20, 20);
+        addButton(buttonGuiHelp);
 
         addWidget(pathListWidget);
         addWidget(searchText);
         startWatcher();
         sorted = false;
+        updateState();
         resortFiles(sortType);
     }
 
@@ -231,6 +241,18 @@ public class GuiFileImporter extends MXScreen
             reloadFiles();
             sorted = false;
         }
+    }
+
+    private void helpToggled() {
+        buttonGuiHelp.setHelpEnabled(!buttonGuiHelp.isHelpEnabled());
+        children.stream().filter(IHooverText.class::isInstance)
+                .forEach(b -> ((IHooverText) b).setHooverTextOverride(buttonGuiHelp.isHelpEnabled()));
+        updateState();
+    }
+
+    private void updateState() {
+        buttonGuiHelp.addHooverText(true, HELP_HELP01);
+        buttonGuiHelp.addHooverText(false, buttonGuiHelp.isHelpEnabled() ? HELP_HELP02 : HELP_HELP03);
     }
 
     private void reloadFiles()
@@ -284,10 +306,12 @@ public class GuiFileImporter extends MXScreen
         init();
     }
 
-    private void selectDone()
+    private void selectDone(boolean doubleClicked)
     {
         if (selectedEntry != null)
             ActionGet.INSTANCE.select(ImportHelper.importToMXTFile(selectedEntry.getPath()));
+        if (doubleClicked)
+            getMC().mouseHandler.releaseMouse();
         onClose();
     }
 
@@ -302,6 +326,7 @@ public class GuiFileImporter extends MXScreen
     {
         searchText.mouseClicked(pMouseX, pMouseY, pButton);
         ModGuiHelper.clearOnMouseLeftClicked(searchText, pMouseX, pMouseY, pButton);
+        updateState();
         return super.mouseClicked(pMouseX, pMouseY, pButton);
     }
 

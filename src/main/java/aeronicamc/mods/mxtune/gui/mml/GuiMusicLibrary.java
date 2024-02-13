@@ -162,8 +162,10 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 
         titleLabel = new MXLabel(font, (width - font.width(title)) / 2, 5, font.width(title), entryHeight, title, TextColorFg.WHITE);
         fileDataListWidget.setLayout(left, listTop, listWidth, listHeight);
-        this.fileDataListWidget.setCallBack((entry, doubleClicked) -> {
+        fileDataListWidget.setCallBack((entry, doubleClicked) -> {
             selectedEntry = entry;
+            if (doubleClicked)
+                selectDone(true);
             updatePartList();
         });
 
@@ -214,7 +216,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         buttonPlay.setLayout(xPlay, buttonTop, 75, 20);
         addButton(buttonPlay);
 
-        MXButton mxbSelectDone = new MXButton(new TranslationTextComponent("gui.mxtune.button.select"), select->selectDone());
+        MXButton mxbSelectDone = new MXButton(new TranslationTextComponent("gui.mxtune.button.select"), select->selectDone(false));
         mxbSelectDone.setLayout(xDone, buttonTop, 75, 20);
         addButton(mxbSelectDone);
 
@@ -336,11 +338,13 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         init();
     }
 
-    private void selectDone()
+    private void selectDone(boolean doubleClicked)
     {
         // action get file, etc...
         if (fileDataListWidget.getSelected() != null)
             ActionGet.INSTANCE.select(fileDataListWidget.getSelected().getPath());
+        if (doubleClicked)
+            getMC().mouseHandler.releaseMouse();
         onClose();
     }
 

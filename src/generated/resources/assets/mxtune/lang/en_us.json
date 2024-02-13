@@ -96,7 +96,7 @@
   "gui.mxtune.button.plus": "+",
   "gui.mxtune.button.plus.help01": "Add an Instrument Part Tab at the end (right most).",
   "gui.mxtune.button.refresh": "Refresh",
-  "gui.mxtune.button.refresh.help01": "Only needed if the list does now refresh automatically after placing files into the folder.",
+  "gui.mxtune.button.refresh.help01": "Click if the list doesn't refresh automatically after placing files into the folder.",
   "gui.mxtune.button.right_rs_out.disabled": "Output Disabled",
   "gui.mxtune.button.right_rs_out.enabled": "Output Enabled",
   "gui.mxtune.button.right_rs_out.help01": "Right Side Redstone Output Toggle",
