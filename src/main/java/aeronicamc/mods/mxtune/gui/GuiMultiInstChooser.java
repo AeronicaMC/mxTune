@@ -26,7 +26,7 @@ public class GuiMultiInstChooser extends Screen
     private int guiLeft;
     private int guiTop;
     private final Screen parent;
-    private final SoundFontList widget = new SoundFontList().init();
+    private final SoundFontList fontList = new SoundFontList().init();
 
     @SuppressWarnings("unused")
     public GuiMultiInstChooser(Screen parent, MultiInstContainer menu)
@@ -47,18 +47,19 @@ public class GuiMultiInstChooser extends Screen
         this.guiTop = (this.height - IMAGE_HEIGHT) / 2;
 
         int instListWidth;
-        instListWidth = Math.min(widget.getSuggestedWidth(), 200);
-        widget.setLayout(guiLeft + 10, guiTop + 10, instListWidth + 1, IMAGE_HEIGHT -20);
-        widget.setCallBack(this::selectCallback);
-        addWidget(widget);
+        instListWidth = Math.min(fontList.getSuggestedWidth(), 200);
+        fontList.setLayout(guiLeft + 10, guiTop + 10, instListWidth + 1, IMAGE_HEIGHT -20);
+        fontList.setCallBack(this::selectCallback);
+        addWidget(fontList);
 
         int widthButtons = 50;
-        int posX = (widget.getRight() + (guiLeft + IMAGE_WIDTH - widget.getRight())/2) - widthButtons/2;
+        int posX = (fontList.getRight() + (guiLeft + IMAGE_WIDTH - fontList.getRight())/2) - widthButtons/2;
         int posY = guiTop + IMAGE_HEIGHT - 20 - 15;
 
         this.addButton(new Button(posX, posY, widthButtons, 20, new TranslationTextComponent("gui.done"), done -> {
-            selectCallback(Objects.requireNonNull(widget.getSelected()), false);
-            onClose();
+            selectCallback(Objects.requireNonNull(fontList.getSelected()), false);
+            removed();
+            minecraft.setScreen(parent);
         }));
     }
 
@@ -66,8 +67,11 @@ public class GuiMultiInstChooser extends Screen
     {
         getPlayer(Objects.requireNonNull(minecraft))
                 .ifPresent(player-> ((MultiInstScreen)parent).updateButton(selected.getIndex()));
-        if (doubleClicked)
-            onClose();
+        if (doubleClicked) {
+            removed();
+            minecraft.mouseHandler.releaseMouse();
+            minecraft.setScreen(parent);
+        }
     }
 
     Optional<PlayerEntity> getPlayer(Minecraft minecraft)
@@ -77,9 +81,9 @@ public class GuiMultiInstChooser extends Screen
 
     private void setSelected(int index)
     {
-        SoundFontList.Entry selected = widget.children().get(index);
-        widget.setSelected(selected);
-        widget.centerScrollOn(selected);
+        SoundFontList.Entry selected = fontList.children().get(index);
+        fontList.setSelected(selected);
+        fontList.centerScrollOn(selected);
     }
 
     @Override
@@ -121,22 +125,16 @@ public class GuiMultiInstChooser extends Screen
     @Override
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
-        // Render background
         this.renderBackground(pMatrixStack);
-
-        // render the instrument chooser widget
-        widget.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
-
-        // Render labels
+        fontList.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         int titleWidth = font.width(this.title);
         font.draw(pMatrixStack, this.title, (guiLeft+ IMAGE_WIDTH) - titleWidth - 10F, guiTop + 4F, TextColorFg.DARK_GRAY);
-
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
 
         // Render the Instrument GUI image
-        int relX = (widget.getRight() + (guiLeft + IMAGE_WIDTH - widget.getRight())/2);
+        int relX = (fontList.getRight() + (guiLeft + IMAGE_WIDTH - fontList.getRight())/2);
         int relY = guiTop + (IMAGE_HEIGHT)/3;
-        ItemStack itemStack = widget.getSelected() != null ? ModItems.getMultiInst(widget.getSelected().getIndex()) : Items.CREEPER_HEAD.getDefaultInstance();
+        ItemStack itemStack = fontList.getSelected() != null ? ModItems.getMultiInst(fontList.getSelected().getIndex()) : Items.CREEPER_HEAD.getDefaultInstance();
         ModGuiHelper.renderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(), itemStack, relX, relY, 3, true);
     }
 }
