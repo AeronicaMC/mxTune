@@ -52,8 +52,8 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     private final MXLabel[] mmlLabelLines = new MXLabel[MAX_MML_LINES];
     private final String[] cachedTextLines = new String[MAX_MML_LINES];
     private final int[] cachedCursorPos = new int[MAX_MML_LINES];
-    private MXButton buttonAddLine;
-    private MXButton buttonMinusLine;
+    private MXButton buttonAddChord;
+    private MXButton buttonMinusChord;
     private static final String[] lineNames = new String[MAX_MML_LINES];
 
     /* MML Line limits - allow limiting the viewable lines */
@@ -116,17 +116,24 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
 
         // Create add/minus line buttons
         posY = labelStatus.y + labelStatus.getHeight() + PADDING;
-        buttonAddLine = new MXButton(posX, posY, 30, 20, new TranslationTextComponent("gui.mxtune.button.plus"), p -> addLine());
-        addButton(buttonAddLine);
-        buttonMinusLine = new MXButton(buttonAddLine.x + buttonAddLine.getWidth(), posY, 30, 20, new TranslationTextComponent("gui.mxtune.button.minus"), p -> minusLine());
-        addButton(buttonMinusLine);
+        buttonAddChord = new MXButton(posX, posY, 30, 20, new TranslationTextComponent("gui.mxtune.button.plus_chord"), p -> addLine());
+        buttonAddChord.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.plus_chord").withStyle(TextFormatting.RESET));
+        buttonAddChord.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.plus_chord.help01").withStyle(TextFormatting.YELLOW));
+        addButton(buttonAddChord);
+        buttonMinusChord = new MXButton(buttonAddChord.x + buttonAddChord.getWidth(), posY, 30, 20, new TranslationTextComponent("gui.mxtune.button.minus_chord"), p -> minusLine());
+        buttonMinusChord.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.minus_chord").withStyle(TextFormatting.RESET));
+        buttonMinusChord.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.minus_chord.help01").withStyle(TextFormatting.YELLOW));
+        buttonMinusChord.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.minus_chord.help02").withStyle(TextFormatting.GREEN));
+        addButton(buttonMinusChord);
 
         // Create Clipboard Paste and Copy buttons
-        MXButton buttonPasteFromClipBoard = new MXButton(posX, buttonMinusLine.y + buttonMinusLine.getHeight() + PADDING, 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from"), p -> pasteFromClipboard());
+        MXButton buttonPasteFromClipBoard = new MXButton(posX, buttonMinusChord.y + buttonMinusChord.getHeight() + PADDING, 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from"), p -> pasteFromClipboard());
         buttonPasteFromClipBoard.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from").withStyle(TextFormatting.RESET));
         buttonPasteFromClipBoard.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from.help01").withStyle(TextFormatting.YELLOW));
         addButton(buttonPasteFromClipBoard);
-        MXButton buttonCopyToClipBoard = new MXButton(posX, buttonPasteFromClipBoard.y + buttonPasteFromClipBoard.getHeight(), 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_Copy_to"), p -> copyToClipboard());
+        MXButton buttonCopyToClipBoard = new MXButton(posX, buttonPasteFromClipBoard.y + buttonPasteFromClipBoard.getHeight(), 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_copy_to"), p -> copyToClipboard());
+        buttonCopyToClipBoard.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.clipboard_copy_to").withStyle(TextFormatting.RESET));
+        buttonCopyToClipBoard.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.clipboard_copy_to.help01").withStyle(TextFormatting.YELLOW));
         addButton(buttonCopyToClipBoard);
 
         int labelWidth = Math.max(font.width(lineNames[0]), font.width(lineNames[1])) + PADDING;
@@ -431,8 +438,8 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         buttonPlay.active = isPlaying || duration > 4 || totalCharacters > 0;
         buttonPlay.setMessage(isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_part"));
 
-        buttonAddLine.visible = viewableLineCount < MAX_MML_LINES;
-        buttonMinusLine.visible = viewableLineCount > MIN_MML_LINES;
+        buttonAddChord.visible = viewableLineCount < MAX_MML_LINES;
+        buttonMinusChord.visible = viewableLineCount > MIN_MML_LINES;
         parseTest(false);
     }
 

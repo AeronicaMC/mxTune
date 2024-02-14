@@ -134,6 +134,9 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.minus", "-");
         addGuiText("button.minus.help01", "Hides the last right most Instrument Part Tab.");
         addGuiText("button.minus.help02", "Hidden tabs do not lose their contents. Hidden tabs are not saved or played.");
+        addGuiText("button.minus_chord", "-");
+        addGuiText("button.minus_chord.help01", "Hides the bottom most chord line.");
+        addGuiText("button.minus_chord.help02", "Hidden lines do not lose their contents. Hidden lines are not saved, played or copied.");
         addGuiText("button.new", "New");
         addGuiText("button.new.help01", "Clears all text and MML. Will ask to save.");
         addGuiText("button.open_folder", "Open Folder");
@@ -143,9 +146,12 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.library.help01", "Select and load a saved .mxt file");
         addGuiText("button.plus", "+");
         addGuiText("button.plus.help01", "Add an Instrument Part Tab at the end (right most).");
+        addGuiText("button.plus_chord", "+");
+        addGuiText("button.plus_chord.help01", "Add an Instrument chord line at the bottom.");
         addGuiText("button.refresh", "Refresh");
         addGuiText("button.refresh.help01", "Click if the list doesn't refresh automatically after placing files into the folder.");
-        addGuiText("button.clipboard_Copy_to", "Copy");
+        addGuiText("button.clipboard_copy_to", "Copy");
+        addGuiText("button.clipboard_copy_to.help01", "Copy MML to the clipboard in Mabinogi Format.");
         addGuiText("button.clipboard_paste_from", "Paste");
         addGuiText("button.clipboard_paste_from.help01", "Paste MML in Mabinogi Clipboard Format.");
         addGuiText("button.play", "Play");

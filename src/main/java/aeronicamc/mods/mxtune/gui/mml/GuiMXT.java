@@ -488,21 +488,23 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         for (int i = 0; i < viewableTabCount; i++)
         {
             MXButton gb = buttonNames[i];
-            ITextComponent name = getButtonName(i);
+            ITextComponent name = getButtonName(i, TextFormatting.RESET);
             int nameWidth = getFont().width(name) + PADDING * 4;
             gb.x = prevWidth + PADDING;
             gb.setMessage(name);
+            gb.addHooverText(true, getButtonName(i, TextFormatting.YELLOW));
+            gb.setHooverTextOverride(true);
             int limitedWidth = Math.min((width - staticButtonWidth) / viewableTabCount, Math.max(20, nameWidth));
             gb.setWidth(limitedWidth);
             prevWidth += limitedWidth;
         }
     }
 
-    private ITextComponent getButtonName(int index)
+    private ITextComponent getButtonName(int index, TextFormatting style)
     {
         String number = String.format("%d", index + 1);
         MXTunePart part = childTabs[index].getPart();
-        ITextComponent localizedInstrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(childTabs[index].getPart().getInstrumentId()));
+        ITextComponent localizedInstrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(childTabs[index].getPart().getInstrumentId())).withStyle(style);
         return (!part.getInstrumentId().isEmpty()) ? new StringTextComponent(String.format("%s: ", number)).append(localizedInstrumentName) : new StringTextComponent(number);
     }
 
