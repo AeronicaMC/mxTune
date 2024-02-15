@@ -2,6 +2,8 @@ package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.gui.widget.GuiHelpButton;
 import aeronicamc.mods.mxtune.gui.widget.IHooverText;
+import aeronicamc.mods.mxtune.gui.widget.MXButton;
+import aeronicamc.mods.mxtune.gui.widget.list.FileDataList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -14,7 +16,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 public class ModGuiHelper
 {
@@ -53,5 +57,26 @@ public class ModGuiHelper
         if (mouseButton == 1 && mouseX >= textFieldWidget.x && mouseX < textFieldWidget.x + textFieldWidget.getWidth()
                 && mouseY >= textFieldWidget.y && mouseY < textFieldWidget.y + textFieldWidget.getHeight())
             textFieldWidget.setValue("");
+    }
+
+    public enum SortType implements Comparator<FileDataList.Entry>
+    {
+        NORMAL { @Override protected int compare(String name1, String name2){ return 0; }},
+        A_TO_Z { @Override protected int compare(String name1, String name2){ return name1.compareTo(name2); }},
+        Z_TO_A { @Override protected int compare(String name1, String name2){ return name2.compareTo(name1); }};
+
+        public MXButton button;
+        protected abstract int compare(String name1, String name2);
+        @Override
+        public int compare(FileDataList.Entry o1, FileDataList.Entry o2)
+        {
+            String name1 = o1.getFileData().getName().toLowerCase(Locale.ROOT);
+            String name2 = o2.getFileData().getName().toLowerCase(Locale.ROOT);
+            return compare(name1, name2);
+        }
+
+        public ITextComponent getButtonText() {
+            return new TranslationTextComponent("gui.mxtune.button_order." + net.minecraftforge.fml.loading.StringUtils.toLowerCase(name()));
+        }
     }
 }

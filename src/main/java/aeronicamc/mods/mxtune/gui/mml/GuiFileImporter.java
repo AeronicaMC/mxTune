@@ -6,14 +6,12 @@ import aeronicamc.mods.mxtune.gui.MXScreen;
 import aeronicamc.mods.mxtune.gui.ModGuiHelper;
 import aeronicamc.mods.mxtune.gui.TextColorFg;
 import aeronicamc.mods.mxtune.gui.widget.*;
-import aeronicamc.mods.mxtune.gui.widget.list.PathList;
+import aeronicamc.mods.mxtune.gui.widget.list.FileDataList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.loading.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +20,10 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,30 +34,11 @@ public class GuiFileImporter extends MXScreen
 {
     private static final Logger LOGGER = LogManager.getLogger(GuiFileImporter.class);
     private final Object threadSync = new Object();
-    private enum SortType implements Comparator<PathList.Entry>
-    {
-        NORMAL { @Override protected int compare(String name1, String name2) { return 0; } },
-        A_TO_Z{ @Override protected int compare(String name1, String name2){ return name1.compareTo(name2); }},
-        Z_TO_A{ @Override protected int compare(String name1, String name2){ return name2.compareTo(name1); }};
 
-        Button button;
-        protected abstract int compare(String name1, String name2);
-
-        @Override
-        public int compare(PathList.Entry o1, PathList.Entry o2) {
-            String name1 = StringUtils.toLowerCase(o1.getPath().getFileName().toString());
-            String name2 = StringUtils.toLowerCase(o2.getPath().getFileName().toString());
-            return compare(name1, name2);
-        }
-
-        ITextComponent getButtonText() {
-            return new TranslationTextComponent("fml.menu.mods." + StringUtils.toLowerCase(name()));
-        }
-    }
     private final Screen parent;
 
-    private final PathList pathListWidget =  new PathList();
-    private PathList.Entry selectedEntry;
+    private final FileDataList importFileListWidget =  new FileDataList();
+    private FileDataList.Entry selectedEntry;
 
     private MXLabel titleLabel;
     private MXLabel searchLabel;
@@ -65,7 +47,7 @@ public class GuiFileImporter extends MXScreen
     private SortType sortType = SortType.NORMAL;
     private String lastSearch = "";
 
-    private List<Path> fileList = new ArrayList<>();
+    private List<Path> importPaths = new ArrayList<>();
 
     private final DirectoryWatcher watcher;
     private boolean watcherStarted = false;
@@ -143,8 +125,8 @@ public class GuiFileImporter extends MXScreen
         int statusTop = listBottom + 4;
 
         titleLabel = new MXLabel(font, (width - font.width(title)) / 2, 5, font.width(title), entryHeight, title, TextColorFg.WHITE);
-        pathListWidget.setLayout(left, listTop, listWidth, listHeight);
-        this.pathListWidget.setCallBack((entry, doubleClicked) -> {
+        importFileListWidget.setLayout(left, listTop, listWidth, listHeight);
+        this.importFileListWidget.setCallBack((entry, doubleClicked) -> {
             selectedEntry = entry;
             if (doubleClicked)
                 selectDone(true);
@@ -162,13 +144,19 @@ public class GuiFileImporter extends MXScreen
         int buttonWidth = 75;
         int x = left;
 
-        SortType.NORMAL.button = new Button(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.NORMAL.getButtonText(), b -> resortFiles(SortType.NORMAL));
+        SortType.NORMAL.button = new MXButton(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.NORMAL.getButtonText(), b -> resortFiles(SortType.NORMAL));
+        SortType.NORMAL.button.addHooverText(true, SortType.NORMAL.getButtonText());
+        SortType.NORMAL.button.addHooverText(false, new TranslationTextComponent("gui.mxtune.button_order.normal.help01").withStyle(TextFormatting.YELLOW));
         addButton(SortType.NORMAL.button);
         x += buttonWidth + buttonMargin;
-        SortType.A_TO_Z.button = new Button(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.A_TO_Z.getButtonText(), b -> resortFiles(SortType.A_TO_Z));
+        SortType.A_TO_Z.button = new MXButton(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.A_TO_Z.getButtonText(), b -> resortFiles(SortType.A_TO_Z));
+        SortType.A_TO_Z.button.addHooverText(true, SortType.A_TO_Z.getButtonText());
+        SortType.A_TO_Z.button.addHooverText(false, new TranslationTextComponent("gui.mxtune.button_order.a_to_z.help01").withStyle(TextFormatting.YELLOW));
         addButton(SortType.A_TO_Z.button);
         x += buttonWidth + buttonMargin;
-        SortType.Z_TO_A.button = new Button(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.Z_TO_A.getButtonText(), b -> resortFiles(SortType.Z_TO_A));
+        SortType.Z_TO_A.button = new MXButton(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.Z_TO_A.getButtonText(), b -> resortFiles(SortType.Z_TO_A));
+        SortType.Z_TO_A.button.addHooverText(true, SortType.Z_TO_A.getButtonText());
+        SortType.Z_TO_A.button.addHooverText(false, new TranslationTextComponent("gui.mxtune.button_order.z_to_a.help01").withStyle(TextFormatting.YELLOW));
         addButton(SortType.Z_TO_A.button);
 
         int buttonTop = height - 25;
@@ -179,29 +167,31 @@ public class GuiFileImporter extends MXScreen
         int xHelp = xCancel + buttonWidth + buttonMargin;
         MXButton mxbOpenFolder = new MXButton(new TranslationTextComponent("gui.mxtune.button.open_folder"), open->openFolder());
         mxbOpenFolder.setLayout(xOpen, buttonTop, 75, 20);
-        mxbOpenFolder.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.open_folder").withStyle(TextFormatting.YELLOW));
-        mxbOpenFolder.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.open_folder.help01").withStyle(TextFormatting.WHITE));
+        mxbOpenFolder.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.open_folder").withStyle(TextFormatting.RESET));
+        mxbOpenFolder.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.open_folder.help01").withStyle(TextFormatting.YELLOW));
         mxbOpenFolder.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.open_folder.help02").withStyle(TextFormatting.GREEN));
         addButton(mxbOpenFolder);
 
         MXButton mxbRefreshFiles = new MXButton(new TranslationTextComponent("gui.mxtune.button.refresh"), refresh->refreshFiles());
         mxbRefreshFiles.setLayout(xRefresh, buttonTop, 75, 20);
-        mxbRefreshFiles.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.refresh").withStyle(TextFormatting.YELLOW));
-        mxbRefreshFiles.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.refresh.help01").withStyle(TextFormatting.WHITE));
+        mxbRefreshFiles.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.refresh").withStyle(TextFormatting.RESET));
+        mxbRefreshFiles.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.refresh.help01").withStyle(TextFormatting.YELLOW));
 
         addButton(mxbRefreshFiles);
 
         MXButton mxbSelectDone = new MXButton(new TranslationTextComponent("gui.mxtune.button.select"), select->selectDone(false));
+        mxbSelectDone.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.select").withStyle(TextFormatting.RESET));
         mxbSelectDone.setLayout(xDone, buttonTop, 75, 20);
         addButton(mxbSelectDone);
 
         MXButton mxbCancelDone = new MXButton(new TranslationTextComponent("gui.cancel"), cancel->cancelDone());
+        mxbCancelDone.addHooverText(true, new TranslationTextComponent("gui.cancel").withStyle(TextFormatting.RESET));
         mxbCancelDone.setLayout(xCancel, buttonTop, 75, 20);
         addButton(mxbCancelDone);
         buttonGuiHelp.setLayout(xHelp, buttonTop, 20, 20);
         addButton(buttonGuiHelp);
 
-        addWidget(pathListWidget);
+        addWidget(importFileListWidget);
         addWidget(searchText);
         startWatcher();
         sorted = false;
@@ -220,18 +210,18 @@ public class GuiFileImporter extends MXScreen
     {
         searchText.tick();
 
-        if (selectedEntry != null && pathListWidget.children().contains(selectedEntry) && !selectedEntry.equals(pathListWidget.getSelected()))
-            pathListWidget.setSelected(selectedEntry);
+        if (selectedEntry != null && importFileListWidget.children().contains(selectedEntry) && !selectedEntry.equals(importFileListWidget.getSelected()))
+            importFileListWidget.setSelected(selectedEntry);
 
         if (!sorted)
         {
             reloadFiles();
-            pathListWidget.getEntries().sort(sortType);
+            importFileListWidget.getEntries().sort(sortType);
             if (selectedEntry != null)
             {
-                selectedEntry = pathListWidget.children().stream().filter(e -> e.getPath().equals(selectedEntry.getPath())).findFirst().orElse(null);
+                selectedEntry = importFileListWidget.children().stream().filter(e -> e.getPath().equals(selectedEntry.getPath())).findFirst().orElse(null);
                 if (selectedEntry != null)
-                    pathListWidget.centerScrollOn(selectedEntry);
+                    importFileListWidget.centerScrollOn(selectedEntry);
             }
             sorted = true;
         }
@@ -263,24 +253,25 @@ public class GuiFileImporter extends MXScreen
             PathMatcher filter = FileHelper.getMmlMatcher(path);
             try (Stream<Path> paths = Files.list(path))
             {
-                fileList = paths
+                importPaths = paths
                         .filter(filter::matches)
                         .collect(Collectors.toList());
             } catch (NullPointerException | IOException e)
             {
                 LOGGER.error(e);
             }
-            List<Path> files = new ArrayList<>();
-            for (Path file : fileList)
+
+            List<FileData> files = new ArrayList<>();
+            for (Path importFile : importPaths)
             {
-                if (file.getFileName().toString().toLowerCase(Locale.ROOT).contains(searchText.getValue().toLowerCase(Locale.ROOT)))
+                FileData fileData = new FileData(importFile);
+                if (importFile.getFileName().toString().toLowerCase(Locale.ROOT).contains(searchText.getValue().toLowerCase(Locale.ROOT)))
                 {
-                    files.add(file);
+                    files.add(fileData);
                 }
             }
-            fileList = files;
-            pathListWidget.clear();
-            pathListWidget.addAll(files);
+            importFileListWidget.clear();
+            importFileListWidget.addAll(files);
             lastSearch = searchText.getValue();
         }
     }
@@ -336,7 +327,7 @@ public class GuiFileImporter extends MXScreen
         this.renderBackground(pMatrixStack);
         titleLabel.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         searchLabel.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
-        pathListWidget.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+        importFileListWidget.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         searchText.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
     }

@@ -17,7 +17,6 @@ import aeronicamc.mods.mxtune.sound.IAudioStatusCallback;
 import aeronicamc.mods.mxtune.util.MusicProperties;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -30,7 +29,10 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,26 +43,6 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 {
     private static final Logger LOGGER = LogManager.getLogger(GuiMusicLibrary.class);
     private final Object threadSync = new Object();
-    public enum SortType implements Comparator<FileDataList.Entry>
-    {
-        NORMAL { @Override protected int compare(String name1, String name2){ return 0; }},
-        A_TO_Z { @Override protected int compare(String name1, String name2){ return name1.compareTo(name2); }},
-        Z_TO_A { @Override protected int compare(String name1, String name2){ return name2.compareTo(name1); }};
-
-        private Button button;
-        protected abstract int compare(String name1, String name2);
-        @Override
-        public int compare(FileDataList.Entry o1, FileDataList.Entry o2)
-        {
-            String name1 = o1.getFileData().getName().toLowerCase(Locale.ROOT);
-            String name2 = o2.getFileData().getName().toLowerCase(Locale.ROOT);
-            return compare(name1, name2);
-        }
-
-        ITextComponent getButtonText() {
-            return new TranslationTextComponent("fml.menu.mods." + net.minecraftforge.fml.loading.StringUtils.toLowerCase(name()));
-        }
-    }
     private final Screen parent;
 
     private final FileDataList fileDataListWidget = new FileDataList();
@@ -183,13 +165,19 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         int buttonWidth = 75;
         int x = left;
 
-        SortType.NORMAL.button = new Button(x, titleTop, buttonWidth, 20 , SortType.NORMAL.getButtonText(), b -> resortFiles(SortType.NORMAL));
+        SortType.NORMAL.button = new MXButton(x, titleTop, buttonWidth, 20 , SortType.NORMAL.getButtonText(), b -> resortFiles(SortType.NORMAL));
         addButton(SortType.NORMAL.button);
+        SortType.NORMAL.button.addHooverText(true, SortType.NORMAL.getButtonText());
+        SortType.NORMAL.button.addHooverText(false, new TranslationTextComponent("gui.mxtune.button_order.normal.help01").withStyle(TextFormatting.YELLOW));
         x += buttonWidth + buttonMargin;
-        SortType.A_TO_Z.button = new Button(x, titleTop, buttonWidth, 20 , SortType.A_TO_Z.getButtonText(), b -> resortFiles(SortType.A_TO_Z));
+        SortType.A_TO_Z.button = new MXButton(x, titleTop, buttonWidth, 20 , SortType.A_TO_Z.getButtonText(), b -> resortFiles(SortType.A_TO_Z));
+        SortType.A_TO_Z.button.addHooverText(true, SortType.A_TO_Z.getButtonText());
+        SortType.A_TO_Z.button.addHooverText(false, new TranslationTextComponent("gui.mxtune.button_order.a_to_z.help01").withStyle(TextFormatting.YELLOW));
         addButton(SortType.A_TO_Z.button);
         x += buttonWidth + buttonMargin;
-        SortType.Z_TO_A.button = new Button(x, titleTop, buttonWidth, 20 , SortType.Z_TO_A.getButtonText(), b -> resortFiles(SortType.Z_TO_A));
+        SortType.Z_TO_A.button = new MXButton(x, titleTop, buttonWidth, 20 , SortType.Z_TO_A.getButtonText(), b -> resortFiles(SortType.Z_TO_A));
+        SortType.Z_TO_A.button.addHooverText(true, SortType.Z_TO_A.getButtonText());
+        SortType.Z_TO_A.button.addHooverText(false, new TranslationTextComponent("gui.mxtune.button_order.z_to_a.help01").withStyle(TextFormatting.YELLOW));
         addButton(SortType.Z_TO_A.button);
 
         int buttonTop = height - 25;
@@ -201,27 +189,30 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         int xHelp = xCancel + buttonWidth + buttonMargin;
         MXButton mxbOpenFolder = new MXButton(new TranslationTextComponent("gui.mxtune.button.open_folder"), open->openFolder());
         mxbOpenFolder.setLayout(xOpen, buttonTop, 75, 20);
-        mxbOpenFolder.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.open_folder").withStyle(TextFormatting.YELLOW));
-        mxbOpenFolder.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.open_folder.help01").withStyle(TextFormatting.WHITE));
+        mxbOpenFolder.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.open_folder").withStyle(TextFormatting.RESET));
+        mxbOpenFolder.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.open_folder.help01").withStyle(TextFormatting.YELLOW));
         mxbOpenFolder.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.open_folder.help02").withStyle(TextFormatting.GREEN));
         addButton(mxbOpenFolder);
 
         MXButton mxbRefreshFiles = new MXButton(new TranslationTextComponent("gui.mxtune.button.refresh"), refresh->refreshFiles());
         mxbRefreshFiles.setLayout(xRefresh, buttonTop, 75, 20);
-        mxbRefreshFiles.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.refresh").withStyle(TextFormatting.YELLOW));
-        mxbRefreshFiles.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.refresh.help01").withStyle(TextFormatting.WHITE));
+        mxbRefreshFiles.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.refresh").withStyle(TextFormatting.RESET));
+        mxbRefreshFiles.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.refresh.help01").withStyle(TextFormatting.YELLOW));
         addButton(mxbRefreshFiles);
 
         buttonPlay = new MXButton(new TranslationTextComponent("gui.mxtune.button.play"), p -> playMusic());
         buttonPlay.setLayout(xPlay, buttonTop, 75, 20);
+        buttonPlay.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.play").withStyle(TextFormatting.RESET));
         addButton(buttonPlay);
 
         MXButton mxbSelectDone = new MXButton(new TranslationTextComponent("gui.mxtune.button.select"), select->selectDone(false));
         mxbSelectDone.setLayout(xDone, buttonTop, 75, 20);
+        mxbSelectDone.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.select").withStyle(TextFormatting.RESET));
         addButton(mxbSelectDone);
 
         MXButton mxbCancelDone = new MXButton(new TranslationTextComponent("gui.cancel"), cancel->cancelDone());
         mxbCancelDone.setLayout(xCancel, buttonTop, 75, 20);
+        mxbCancelDone.addHooverText(true, new TranslationTextComponent("gui.cancel").withStyle(TextFormatting.RESET));
         addButton(mxbCancelDone);
         buttonGuiHelp.setLayout(xHelp, buttonTop, 20, 20);
         addButton(buttonGuiHelp);

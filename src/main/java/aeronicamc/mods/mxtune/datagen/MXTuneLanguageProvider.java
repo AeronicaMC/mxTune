@@ -154,6 +154,14 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.clipboard_copy_to.help01", "Copy MML to the clipboard in Mabinogi Format.");
         addGuiText("button.clipboard_paste_from", "Paste");
         addGuiText("button.clipboard_paste_from.help01", "Paste MML in Mabinogi Clipboard Format.");
+
+        addGuiText("button_order.normal", "Off");
+        addGuiText("button_order.normal.help01", "Sort off.");
+        addGuiText("button_order.a_to_z", "A-Z");
+        addGuiText("button_order.a_to_z.help01", "Ascending order.");
+        addGuiText("button_order.z_to_a", "Z-A");
+        addGuiText("button_order.z_to_a.help01", "Descending order.");
+
         addGuiText("button.play", "Play");
         addGuiText("button.play_all", "Play All");
         addGuiText("button.play_part", "Play Part");
