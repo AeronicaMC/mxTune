@@ -18,6 +18,7 @@ import java.util.function.BiConsumer;
 @SuppressWarnings("unused")
 public class FileDataList extends MXExtendedList<FileDataList.Entry>
 {
+    private boolean showExtension;
 
     public FileDataList()
     {
@@ -27,6 +28,14 @@ public class FileDataList extends MXExtendedList<FileDataList.Entry>
     public FileDataList(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, BiConsumer<Entry, Boolean> selectCallback)
     {
         super(minecraft, pWidth, pHeight, pY0, pY1, pItemHeight, pLeft, selectCallback);
+    }
+
+    public boolean isShowExtension() {
+        return showExtension;
+    }
+
+    public void setShowExtension(boolean showExtension) {
+        this.showExtension = showExtension;
     }
 
     public int add(FileData fileData)
@@ -78,7 +87,10 @@ public class FileDataList extends MXExtendedList<FileDataList.Entry>
 
         public String getName()
         {
-            return fileData.getName();
+            if (isShowExtension())
+                return fileData.getPath().getFileName().toString();
+            else
+                return fileData.getName();
         }
 
         @Override
@@ -89,7 +101,7 @@ public class FileDataList extends MXExtendedList<FileDataList.Entry>
                 fill(pMatrixStack, pLeft - 2, pTop - 2, pLeft - 5 + width, pTop + itemHeight - 1, 0xA0A0A0A0);
             }
 
-            ITextComponent translated = new StringTextComponent(this.fileData.getName());
+            ITextComponent translated = new StringTextComponent(this.getName());
             ITextProperties trimmed = minecraft.font.substrByWidth(translated, pWidth - 6);
             minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), pLeft, (pTop + 1), getSelected() == this ? TextColorFg.WHITE : TextColorFg.GRAY, true);
         }
