@@ -436,7 +436,8 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     {
         // enable Play button when MML Parsing Field has greater than 0 characters and passes the MML parsing tests
         buttonPlay.active = isPlaying || duration > 4 || totalCharacters > 0;
-        buttonPlay.setMessage(isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_part"));
+        buttonPlay.setMessage(new TranslationTextComponent( isPlaying ? "gui.mxtune.button.stop" : "gui.mxtune.button.play_part" ));
+        buttonPlay.addHooverText(true, new TranslationTextComponent( isPlaying ? "gui.mxtune.button.stop" : "gui.mxtune.button.play_part" ));
 
         buttonAddChord.visible = viewableLineCount < MAX_MML_LINES;
         buttonMinusChord.visible = viewableLineCount > MIN_MML_LINES;

@@ -79,7 +79,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 
         // refresh the file list automatically - might be better to not bother with extension filtering, but we'll see
         DirectoryStream.Filter<Path> filter = entry ->
-                (entry.toString().endsWith(".mxt"));
+                (entry.toString().toLowerCase(Locale.ROOT).endsWith(".mxt"));
         watcher = new DirectoryWatcher.Builder()
                 .addDirectories(FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER, CLIENT))
                 .setPreExistingAsCreated(true)
@@ -234,7 +234,8 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 
     private void updateState()
     {
-        buttonPlay.setMessage(isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play"));
+        buttonPlay.setMessage(new TranslationTextComponent( isPlaying ? "gui.mxtune.button.stop" : "gui.mxtune.button.play" ));
+        buttonPlay.addHooverText(true, new TranslationTextComponent( isPlaying ? "gui.mxtune.button.stop" : "gui.mxtune.button.play" ));
         buttonGuiHelp.addHooverText(true, HELP_HELP01);
         buttonGuiHelp.addHooverText(false, buttonGuiHelp.isHelpEnabled() ? HELP_HELP02 : HELP_HELP03);
         updatePartList();

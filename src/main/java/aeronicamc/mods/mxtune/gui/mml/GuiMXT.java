@@ -55,7 +55,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private final MXTextFieldWidget textTitle = new MXTextFieldWidget(MXT_SONG_TITLE_LENGTH);
     private final MXTextFieldWidget textAuthor = new MXTextFieldWidget(MXT_SONG_AUTHOR_LENGTH);
     private final MXTextFieldWidget textSource = new MXTextFieldWidget(MXT_SONG_SOURCE_LENGTH);
-    private MXButton buttonPlayStop;
+    private MXButton buttonPlay;
     private MXButton buttonSheetMusic;
     private MXButton buttonMusicScore;
     private final GuiHelpButton buttonGuiHelp = new GuiHelpButton(p -> helpToggled());
@@ -135,6 +135,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         buttonSheetMusic.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.write_sheet_music.help02").withStyle(TextFormatting.GREEN));
         buttonMusicScore = new MXButton(buttonSheetMusic.getLeft() + buttonSheetMusic.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.write_music_score"), pDone->writeMusicScore());
         MXButton buttonCancel = new MXButton(buttonMusicScore.getLeft() + buttonMusicScore.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.cancel"), pCancel->cancelAction());
+        buttonCancel.addHooverText(true, new TranslationTextComponent("gui.cancel").withStyle(TextFormatting.RESET));
         buttonGuiHelp.setPosition(buttonCancel.getRight(), buttonY);
         addButton(buttonNew);
         addButton(buttonImport);
@@ -213,9 +214,9 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         }
 
         // Play/Stop
-        buttonPlayStop = new MXButton(width - PADDING - 100, tabbedAreaTop - 24, 100, 20, isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_all"), p->play());
-        buttonPlayStop.active = false;
-        addButton(buttonPlayStop);
+        buttonPlay = new MXButton(width - PADDING - 100, tabbedAreaTop - 24, 100, 20, isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_all"), p->play());
+        buttonPlay.active = false;
+        addButton(buttonPlay);
         reloadState();
         getSelection();
     }
@@ -469,11 +470,13 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         labelDuration.setLabelText(new StringTextComponent(SheetMusicHelper.formatDuration(durationTotal)));
         boolean isOK = countOK == viewableTabCount;
         boolean hasEnoughMusicPaper = player.inventory.getSelected().getCount() >= viewableTabCount;
-        buttonPlayStop.active = isPlaying || isOK;
+        buttonPlay.active = isPlaying || isOK;
         // TODO: Remove MXTune.isDevEnv() when Music Score feature is complete
         buttonSheetMusic.active = !textTitle.getValue().isEmpty() && isOK && hasEnoughMusicPaper;
         buttonMusicScore.active = MXTune.isDevEnv() && buttonSheetMusic.active;
-        buttonPlayStop.setMessage(isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_all"));
+        buttonPlay.setMessage(new TranslationTextComponent( isPlaying ? "gui.mxtune.button.stop" : "gui.mxtune.button.play" ));
+        buttonPlay.addHooverText(true, new TranslationTextComponent( isPlaying ? "gui.mxtune.button.stop" : "gui.mxtune.button.play" ));
+
         sourcesLink.visible = sourcesLink.getUrl().matches("^(http(s)?://[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
 
         buttonSave.active = !textTitle.getValue().isEmpty() && isOK;
@@ -484,7 +487,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private void updateTabbedButtonNames()
     {
         int prevWidth = buttonMinusTab.x + buttonMinusTab.getWidth();
-        int staticButtonWidth = buttonMinusTab.getWidth() + buttonAddTab.getWidth() + buttonPlayStop.getWidth() +  PADDING * 3;
+        int staticButtonWidth = buttonMinusTab.getWidth() + buttonAddTab.getWidth() + buttonPlay.getWidth() +  PADDING * 3;
         for (int i = 0; i < viewableTabCount; i++)
         {
             MXButton gb = buttonNames[i];
@@ -664,7 +667,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private boolean makeSheetMusic()
     {
-        if (!textTitle.getValue().trim().isEmpty() && buttonPlayStop.active)
+        if (!textTitle.getValue().trim().isEmpty() && buttonPlay.active)
         {
             String title = this.textTitle.getValue();
             for (int i = 0; i < viewableTabCount; i++)
@@ -685,7 +688,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private boolean makeMusicScore()
     {
-        if (!textTitle.getValue().trim().isEmpty() && buttonPlayStop.active)
+        if (!textTitle.getValue().trim().isEmpty() && buttonPlay.active)
         {
             String title = this.textTitle.getValue();
             byte[] scoreParts = new byte[1];

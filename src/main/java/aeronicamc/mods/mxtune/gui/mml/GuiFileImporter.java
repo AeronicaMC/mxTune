@@ -61,9 +61,9 @@ public class GuiFileImporter extends MXScreen
 
         // refresh the file list automatically - might be better to not bother with extension filtering, but we'll see
         DirectoryStream.Filter<Path> filter = entry ->
-                (entry.toString().endsWith(".zip")
-                         || entry.toString().endsWith(".mml")
-                         || entry.toString().endsWith(".ms2mml"));
+                (entry.toString().toLowerCase(Locale.ROOT).endsWith(".zip")
+                         || entry.toString().toLowerCase(Locale.ROOT).endsWith(".mml")
+                         || entry.toString().toLowerCase(Locale.ROOT).endsWith(".ms2mml"));
         watcher = new DirectoryWatcher.Builder()
                 .addDirectories(FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER, CLIENT))
                 .setPreExistingAsCreated(true)
@@ -126,6 +126,7 @@ public class GuiFileImporter extends MXScreen
 
         titleLabel = new MXLabel(font, (width - font.width(title)) / 2, 5, font.width(title), entryHeight, title, TextColorFg.WHITE);
         importFileListWidget.setLayout(left, listTop, listWidth, listHeight);
+        importFileListWidget.setShowExtension(true);
         this.importFileListWidget.setCallBack((entry, doubleClicked) -> {
             selectedEntry = entry;
             if (doubleClicked)
