@@ -266,7 +266,7 @@ public class GuiFileImporter extends MXScreen
             for (Path importFile : importPaths)
             {
                 FileData fileData = new FileData(importFile);
-                if (importFile.getFileName().toString().toLowerCase(Locale.ROOT).contains(searchText.getValue().toLowerCase(Locale.ROOT)))
+                if (fileData.getName(false).toLowerCase(Locale.ROOT).contains(searchText.getValue().toLowerCase(Locale.ROOT)))
                 {
                     files.add(fileData);
                 }

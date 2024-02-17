@@ -13,25 +13,22 @@ public class FileData implements Comparable<FileData>
     final Path path;
     final String name;
 
-    public FileData(Path path)
-    {
+    public FileData(Path path) {
         this.path = path;
-        this.name = FileHelper.removeExtension(path.getFileName().toString());
+        this.name = path.getFileName().toString();
     }
 
-    public Path getPath()
-    {
+    public Path getPath() {
         return path;
     }
 
-    public String getName()
-    {
-        return name;
+    public String getName(boolean withExt) {
+        String name = path.getFileName().toString();
+        return withExt ? name : FileHelper.removeExtension(name);
     }
 
     @Override
-    public int compareTo(FileData o)
-    {
+    public int compareTo(FileData o) {
         return this.name.compareTo(o.name);
     }
 
@@ -47,7 +44,7 @@ public class FileData implements Comparable<FileData>
         }
         return new EqualsBuilder()
                 .append(path, ((FileData) o).path)
-                .append(name, ((FileData) o).path)
+                .append(name, ((FileData) o).name)
                 .isEquals();
     }
 

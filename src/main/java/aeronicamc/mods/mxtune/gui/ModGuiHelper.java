@@ -70,8 +70,8 @@ public class ModGuiHelper
         @Override
         public int compare(FileDataList.Entry o1, FileDataList.Entry o2)
         {
-            String name1 = o1.getFileData().getName().toLowerCase(Locale.ROOT);
-            String name2 = o2.getFileData().getName().toLowerCase(Locale.ROOT);
+            String name1 = o1.getFileData().getName(true).toLowerCase(Locale.ROOT);
+            String name2 = o2.getFileData().getName(true).toLowerCase(Locale.ROOT);
             return compare(name1, name2);
         }
 

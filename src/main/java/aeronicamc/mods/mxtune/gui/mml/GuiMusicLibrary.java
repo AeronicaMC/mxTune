@@ -297,7 +297,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
             for (Path libPath : libraryPaths)
             {
                 FileData fileData = new FileData(libPath);
-                if (fileData.getName().toLowerCase(Locale.ROOT).contains(searchText.getValue().toLowerCase(Locale.ROOT)))
+                if (fileData.getName(false).toLowerCase(Locale.ROOT).contains(searchText.getValue().toLowerCase(Locale.ROOT)))
                 {
                     fileDataArrayList.add(fileData);
                 }

@@ -30,10 +30,6 @@ public class FileDataList extends MXExtendedList<FileDataList.Entry>
         super(minecraft, pWidth, pHeight, pY0, pY1, pItemHeight, pLeft, selectCallback);
     }
 
-    public boolean isShowExtension() {
-        return showExtension;
-    }
-
     public void setShowExtension(boolean showExtension) {
         this.showExtension = showExtension;
     }
@@ -87,10 +83,7 @@ public class FileDataList extends MXExtendedList<FileDataList.Entry>
 
         public String getName()
         {
-            if (isShowExtension())
-                return fileData.getPath().getFileName().toString();
-            else
-                return fileData.getName();
+            return fileData.getName(showExtension);
         }
 
         @Override
