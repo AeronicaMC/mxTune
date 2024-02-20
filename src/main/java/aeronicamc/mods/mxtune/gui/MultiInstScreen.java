@@ -6,10 +6,7 @@ import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
 import aeronicamc.mods.mxtune.network.messages.OpenScreenMessage;
-import aeronicamc.mods.mxtune.util.IInstrument;
-import aeronicamc.mods.mxtune.util.ISlotChangedCallback;
-import aeronicamc.mods.mxtune.util.SheetMusicHelper;
-import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
+import aeronicamc.mods.mxtune.util.*;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -44,6 +41,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
     private final GuiVSlideSwitch autoSelectState = new GuiVSlideSwitch(p -> onChangeAuto());
     private final GuiHelpButton helpButton = new GuiHelpButton(p -> helpClicked());
     private final GuiGroupButton groupButton = new GuiGroupButton(p -> onJamClicked());
+
 
     public MultiInstScreen(MultiInstContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
@@ -82,17 +80,41 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         getSignals();
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+        // A hack to force the correct instrument to be selected when auto select is enabled AND
+        // a SheetMusic item is dragged and dropped to replace a SheetMusic item.
+        if (autoSelectState.getOnOff() && instMismatch() && instHasSheetMusic()) {
+            int sheetMusicPatch = SheetMusicHelper.getSuggestedInstrumentIndex(inventory.getSelected());
+            ((IInstrument) inventory.getSelected().getItem()).setPatch(inventory.getSelected(), sheetMusicPatch);
+            updateButton(sheetMusicPatch);
+        }
+    }
+
+    private boolean instHasSheetMusic() {
+        return getMenu().slots.get(0).hasItem();
+    }
+
+    private boolean instMismatch() {
+        return SheetMusicHelper.getSuggestedInstrumentIndex(inventory.getSelected()) != getInstrument();
+    }
+
     int getInstrument()
     {
         return ((IInstrument)inventory.getSelected().getItem()).getPatch(inventory.getSelected());
     }
 
+    /**
+     * Update the instrument button label.
+     * @param selected instrument patch {@link SoundFontProxy#index}
+     */
     void updateButton(int selected)
     {
         int patch = autoSelectState.getOnOff() && SheetMusicHelper.hasSheetMusic(inventory.getSelected()) ? SheetMusicHelper.getSuggestedInstrumentIndex(inventory.getSelected()) : selected;
         ((IInstrument) inventory.getSelected().getItem()).setPatch(inventory.getSelected(), patch);
         buttonChangeInstrument.setMessage(new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(patch)));
-        updateSignals();
+        updateServer();
     }
 
     private void helpClicked()
@@ -130,12 +152,12 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         updateButtonStatuses();
     }
 
-    private void updateSignals()
+    private void updateServer()
     {
         int signals = 0;
         signals += ((IInstrument)inventory.getSelected().getItem()).getPatch(inventory.getSelected()) & 0x00FF;
         signals += autoSelectState.getOnOff() ? 0x2000 : 0;
-        getMenu().setSignals(signals);
+        signals += SheetMusicHelper.hasSheetMusic(inventory.getSelected()) ? 0x4000 : 0;
         PacketDispatcher.sendToServer(new ChooseInstrumentMessage(signals));
     }
 
@@ -144,7 +166,8 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         autoSelectState.setOnOff(!autoSelectState.getOnOff()); // toggle
         if (autoSelectState.getOnOff() && SheetMusicHelper.hasSheetMusic(inventory.getSelected()))
             updateButton(0);
-        else updateSignals();
+        else
+            updateServer();
         updateButtonStatuses();
     }
 
@@ -154,9 +177,9 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
     }
 
     @Override
-    public void onItemStackInserted(int slotIndex, ItemStack itemStack, Type operation)
+    public void onSlotChanged(int slotIndex, ItemStack itemStack, Type operation)
     {
-        if (autoSelectState.getOnOff() && operation.equals(Type.Inserted) && slotIndex == 0 && SheetMusicHelper.hasMusicText(itemStack))
+        if (autoSelectState.getOnOff() && SheetMusicHelper.hasMusicText(itemStack))
             updateButton(getSheetMusicSoundProxyIndex(itemStack));
     }
 

@@ -3,12 +3,15 @@ package aeronicamc.mods.mxtune.inventory;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.ISlotChangedCallback;
 import aeronicamc.mods.mxtune.util.ISlotChangedCallback.Type;
+import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class MultiInstInventory implements IInventory
 {
@@ -84,9 +87,8 @@ public class MultiInstInventory implements IInventory
         {
             pStack.setCount(this.getMaxStackSize());
         }
-        this.setChanged();
         if (slotChangedCallback != null)
-            slotChangedCallback.onItemStackInserted(slot, pStack, Type.Inserted);
+            slotChangedCallback.onSlotChanged(slot, pStack, Type.Inserted);
     }
 
     public void setSlotChangedCallback(ISlotChangedCallback slotChangedCallback)
@@ -117,5 +119,14 @@ public class MultiInstInventory implements IInventory
     {
         this.items.clear();
         this.setChanged();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("items#size", this.items.size())
+                .append("stackName", stack.getHoverName().getString())
+                .append("sheetMusic", SheetMusicHelper.getIMusicFromIInstrument(stack).getHoverName().getString())
+                .toString();
     }
 }

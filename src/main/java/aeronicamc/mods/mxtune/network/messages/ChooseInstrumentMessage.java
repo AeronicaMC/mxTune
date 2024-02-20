@@ -44,7 +44,7 @@ public class ChooseInstrumentMessage extends AbstractMessage<ChooseInstrumentMes
                 ServerPlayerEntity sPlayer = ctx.get().getSender();
                 if (sPlayer != null && !sPlayer.getMainHandItem().isEmpty() && sPlayer.containerMenu != null && sPlayer.getMainHandItem().getItem() instanceof IInstrument)
                 {
-                    ((MultiInstContainer) sPlayer.containerMenu).setSignals(message.signals);
+                    ((MultiInstContainer) sPlayer.containerMenu).updateInstrument(message.signals);
                 }
             });
         ctx.get().setPacketHandled(true);

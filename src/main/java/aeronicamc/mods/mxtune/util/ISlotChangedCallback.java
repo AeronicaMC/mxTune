@@ -11,5 +11,5 @@ public interface ISlotChangedCallback
      * @param itemStack when called
      * @param operation type of Inserted or Removed
      */
-    void onItemStackInserted(int slotIndex, ItemStack itemStack, Type operation);
+    void onSlotChanged(int slotIndex, ItemStack itemStack, Type operation);
 }

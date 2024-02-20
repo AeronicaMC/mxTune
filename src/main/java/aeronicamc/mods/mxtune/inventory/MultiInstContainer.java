@@ -4,14 +4,13 @@ package aeronicamc.mods.mxtune.inventory;
 import aeronicamc.mods.mxtune.init.ModContainers;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.ISlotChangedCallback;
+import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
 import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -23,18 +22,27 @@ import javax.annotation.Nullable;
 
 public class MultiInstContainer extends Container
 {
-    private final IInstrument instItem;
+    private final IInstrument iInstrument;
     private final ItemStack instStack;
     private final MultiInstInventory multiInstInventory;
+
+    PlayerEntity playerEntity;
 
     @SuppressWarnings("unused")
     public MultiInstContainer(int windowId, World world, @Nullable BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
         super(ModContainers.INSTRUMENT_CONTAINER.get(), windowId);
-        instItem = (IInstrument) playerEntity.getMainHandItem().getItem();
-        instStack = playerEntity.getItemInHand(Hand.MAIN_HAND);
+        this.playerEntity = playerEntity;
+        iInstrument = (IInstrument) playerEntity.getMainHandItem().getItem();
+        instStack = playerEntity.getMainHandItem();
         multiInstInventory = new MultiInstInventory(instStack);
-        this.addSlot(new SlotInstrument(multiInstInventory, 0, 12, 8 + 2 * 18));
+        this.addSlot(new SlotInstrument(multiInstInventory, 0, 12, 8 + 2 * 18) {
+            @Override
+            public void setChanged() {
+                super.setChanged();
+                MultiInstContainer.this.slotsChanged(this.container);
+            }
+        });
 
         // Player Inventory
         for (int i = 0; i < 3; i++) {
@@ -53,6 +61,11 @@ public class MultiInstContainer extends Container
     public void setSlotChangedCallback(ISlotChangedCallback slotChangedCallback)
     {
         this.multiInstInventory.setSlotChangedCallback(slotChangedCallback);
+    }
+
+    public void updateInstrument(int signals)
+    {
+        setSignals(signals);
     }
 
     private void trackSignals()
@@ -75,20 +88,22 @@ public class MultiInstContainer extends Container
     public int getSignals()
     {
         int signals = 0;
-        if (instItem != null && !instStack.isEmpty())
+        if (instStack != null)
         {
-            signals += instItem.getPatch(instStack) & 0x00FF;
-            signals += instItem.getAutoSelect(instStack) ? 0x2000 : 0;
+            signals += iInstrument.getPatch(instStack) & 0x00FF;
+            signals += iInstrument.getAutoSelect(instStack) ? 0x2000 : 0;
+            signals += !SheetMusicHelper.getIMusicFromIInstrument(instStack).isEmpty() ? 0x4000 : 0;
         }
         return signals;
     }
 
     public void setSignals(int signals)
     {
-        if (instItem != null && !instStack.isEmpty())
+        if (iInstrument != null && !instStack.isEmpty())
         {
-            instItem.setPatch(instStack, (signals & 0x00FF));
-            instItem.setAutoSelect(instStack,(signals & 0x2000) > 0);
+            iInstrument.setPatch(instStack, (signals & 0x00FF));
+            iInstrument.setAutoSelect(instStack,(signals & 0x2000) > 0);
+            multiInstInventory.setChanged();
         }
     }
 
@@ -126,21 +141,7 @@ public class MultiInstContainer extends Container
                 slot.setChanged();
             }
         }
-        if (!playerIn.level.isClientSide())
-            this.broadcastChanges();
-
         return itemstack;
-    }
-
-    /**
-     * Remove the given Listener. Method name is for legacy.
-     *
-     * @param pListener to be removed.
-     */
-    @Override
-    public void removeSlotListener(IContainerListener pListener)
-    {
-        super.removeSlotListener(pListener);
     }
 
     public static class Factory implements IContainerFactory<MultiInstContainer>
