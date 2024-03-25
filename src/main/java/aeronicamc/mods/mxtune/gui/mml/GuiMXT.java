@@ -34,7 +34,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static aeronicamc.mods.mxtune.Reference.*;
@@ -93,7 +96,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         super(new TranslationTextComponent("gui.mxtune.gui_mxt.title"));
         this.parent = parent;
-        this.player = getMC().player;
+        this.player = getMinecraft().player;
         for (int i = 0; i < MAX_TABS; i++)
         {
             childTabs[i] = new GuiMXTPartTab(this);
@@ -106,7 +109,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         super.init();
         children.clear();
         buttons.clear();
-        getMC().keyboardHandler.setSendRepeatsToGui(true);
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
         int singleLineHeight = getFont().lineHeight + 2;
         int titleWidth = width - PADDING * 2;
 
@@ -230,7 +233,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         this.activeChildIndex = ((MXButton)widget).getIndex();
         widget.active = true;
-        this.childTabs[activeChildIndex].init(getMC(), width, height);
+        this.childTabs[activeChildIndex].init(getMinecraft(), width, height);
         updateState();
     }
 
@@ -444,6 +447,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private void updateButtons()
     {
+        updateButtonHelp();
         Arrays.stream(buttonNames).forEach(button -> {
             if (button.getIndex() >= 0 && button.getIndex() < MAX_TABS)
             {
@@ -514,18 +518,22 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private void helpToggled()
     {
         buttonGuiHelp.setHelpEnabled(!buttonGuiHelp.isHelpEnabled());
+        updateButtons();
+    }
+
+    private void updateButtonHelp()
+    {
         children.stream().filter(IHooverText.class::isInstance)
                 .forEach(b -> ((IHooverText) b).setHooverTextOverride(buttonGuiHelp.isHelpEnabled()));
         childTabs[activeChildIndex].children().stream().filter(IHooverText.class::isInstance)
                 .forEach(b -> ((IHooverText) b).setHooverTextOverride(buttonGuiHelp.isHelpEnabled()));
-        updateButtons();
     }
 
     @Override
     public void onClose()
     {
-        getMC().keyboardHandler.setSendRepeatsToGui(false);
-        getMC().setScreen(parent);
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
+        getMinecraft().setScreen(parent);
     }
 
     @Override
@@ -544,12 +552,12 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         stop();
         updateState();
-        getMC().setScreen(new ConfirmScreen(this::newCallback, new TranslationTextComponent("gui.mxtune.confirm.new.text01"), new TranslationTextComponent("gui.mxtune.new.text02")));
+        getMinecraft().setScreen(new ConfirmScreen(this::newCallback, new TranslationTextComponent("gui.mxtune.confirm.new.text01"), new TranslationTextComponent("gui.mxtune.new.text02")));
     }
 
     private void newCallback(boolean result)
     {
-        getMC().setScreen(this);
+        getMinecraft().setScreen(this);
         if (result)
         {
             mxTuneFile = null;
@@ -569,7 +577,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         ActionGet.INSTANCE.clear();
         ActionGet.INSTANCE.setFileImport();
         viewableTabCount = MIN_TABS;
-        getMC().setScreen(new GuiFileImporter(this));
+        getMinecraft().setScreen(new GuiFileImporter(this));
     }
 
     private void openAction()
@@ -578,7 +586,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         ActionGet.INSTANCE.clear();
         ActionGet.INSTANCE.setFileOpen();
         viewableTabCount = MIN_TABS;
-        getMC().setScreen(new GuiMusicLibrary(this));
+        getMinecraft().setScreen(new GuiMusicLibrary(this));
     }
 
     private void saveAction()
@@ -637,7 +645,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private void writeSheetMusic()
     {
         if (makeSheetMusic())
-            getMC().setScreen(parent);
+            getMinecraft().setScreen(parent);
     }
 
     /**
@@ -646,13 +654,13 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private void writeMusicScore()
     {
         if (makeMusicScore())
-            getMC().setScreen(parent);
+            getMinecraft().setScreen(parent);
     }
 
     private void cancelAction()
     {
         stop();
-        getMC().setScreen(parent);
+        getMinecraft().setScreen(parent);
     }
 
     private void openMmlUrl()
@@ -755,7 +763,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private void stop()
     {
-        getMC().submitAsync(()->ClientAudio.fadeOut(playId, 1));
+        getMinecraft().submitAsync(()->ClientAudio.fadeOut(playId, 1));
         isPlaying = false;
         playId = PlayIdSupplier.INVALID;
 
@@ -767,7 +775,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private boolean mmlPlay(String mmlIn)
     {
         playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
-        getMC().submitAsync(()->ClientAudio.playLocal(durationTotal, playId, mmlIn, this));
+        getMinecraft().submitAsync(()->ClientAudio.playLocal(durationTotal, playId, mmlIn, this));
         updateState();
         return true;
     }
@@ -792,11 +800,4 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             stop();
         }
     }
-
-    private PlayerEntity getPlayer()
-    {
-        return Objects.requireNonNull(player);
-    }
-
-
 }

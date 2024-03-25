@@ -9,7 +9,7 @@ import net.minecraft.util.text.StringTextComponent;
 
 public class GuiRedstoneButton extends MXButton
 {
-    static final ITextComponent EMPTY = new StringTextComponent("");
+    static final ITextComponent EMPTY = StringTextComponent.EMPTY;
     private boolean signalEnabled;
     private final ArrowFaces direction;
 

@@ -336,7 +336,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         if (fileDataListWidget.getSelected() != null)
             ActionGet.INSTANCE.select(fileDataListWidget.getSelected().getPath());
         if (doubleClicked)
-            getMC().mouseHandler.releaseMouse();
+            getMinecraft().mouseHandler.releaseMouse();
         onClose();
     }
 

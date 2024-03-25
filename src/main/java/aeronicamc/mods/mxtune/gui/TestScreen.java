@@ -21,6 +21,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
+import static aeronicamc.mods.mxtune.gui.Handler.openOverlayManagerScreen;
+
 public class TestScreen extends Screen
 {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -56,8 +58,8 @@ public class TestScreen extends Screen
         buttonFile.setLayout(this.width - 105, (this.height / 6 + 168) - 40, 100, 20);
         buttonFile.setMessage(new TranslationTextComponent("gui.mxtune.gui_file_importer.title"));
         addButton(buttonFile);
-        buttonOpen.setLayout(this.width - 55, (this.height / 6 + 168) - 20, 50, 20);
-        buttonOpen.setMessage(new TranslationTextComponent("gui.mxtune.button.open"));
+        buttonOpen.setLayout(this.width - 105, (this.height / 6 + 168) - 20, 100, 20);
+        buttonOpen.setMessage(new StringTextComponent("Test Misc"));
         addButton(buttonOpen);
 
         this.addButton(new MXButton(buttonOpen.getLeft(), buttonOpen.getBottom(), 50, 20, new TranslationTextComponent("gui.done"),
@@ -88,7 +90,7 @@ public class TestScreen extends Screen
 
     public void onButtonOpen()
     {
-        LOGGER.debug("Nothing to do :P");
+        openOverlayManagerScreen(this);
     }
 
     public void onButtonFile()

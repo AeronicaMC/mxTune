@@ -121,12 +121,14 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("label.metadata", "Chars: %s, Duration: %s, Meta: %s");
         addGuiText("label.duration_value_total", "Duration All: ");
 
-        // ModGuiHelper, GuiHelpButton, generic texts
+        // ModGuiHelper, GuiHelpButton, GuiOverlayButton, generic texts
         addGuiText("button.help.help01", "Help");
         addGuiText("button.help.help02", "Hoover over buttons for tips.");
         addGuiText("button.help.help03", "SHIFT-Hoover over buttons for tips.");
         addGuiText("button.enabled", "Enabled");
         addGuiText("button.disabled", "Disabled");
+        addGuiText("button.overlay_button.help01", "Opens the Overlay Manager screen.");
+        addGuiText("button.overlay_button.help02", "The Instrument and Music Venue Tool overlay positions can be changed.");
 
         // GuiMXT, GuiMXTPartTab, GuiFileImporter, GuiMusicLibrary
         addGuiText("button.import", "Import");
@@ -240,6 +242,24 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.member_remove.help01", "Remove: ");
         addGuiText("button.member_remove.help02", "Remove the member from the group.");
         addGuiText("button.member_remove.help03", "Only the member themselves or the leader may remove. If the leader is the only member, then if the leader removes themself the group is removed too.");
+
+        // OverlayManagerScreen
+        addGuiText("button.inst_y_pos_slider", "Instrument YPos");
+        addGuiText("button.inst_y_pos_slider.help01", "Instrument overlay Y position down screen percentage.");
+        addGuiText("button.inst_y_pos_slider.help02", "0% top, 100% bottom");
+        addGuiText("button.tool_y_pos_slider", "Venue Tool YPos");
+        addGuiText("button.tool_y_pos_slider.help01", "Venue Tool overlay Y position down screen percentage.");
+        addGuiText("button.tool_y_pos_slider.help02", "0% top, 100% bottom");
+
+        addGuiText("button.inst_x_pos_enum.help01","Instrument overlay X Position cycles: [Left, Center, Right]");
+        addGuiText("button.tool_x_pos_enum.help01","Venue Tool overlay X Position cycles: [Left, Center, Right]");
+
+        addGuiText("button.oms_done.help01","Close and save changes.");
+        addGuiText("button.oms_cancel.help01","Cancel/Esc discard changes.");
+
+        // Instrument Overlay, Music Venue Tool Overlay
+        addGuiText("overlay.instrument.name", "Instrument Overlay");
+        addGuiText("overlay.venue_tool.name", "Venue Tool Overlay");
     }
 
     private void addChats()
@@ -263,9 +283,13 @@ public class MXTuneLanguageProvider extends LanguageProvider
     {
         addConfig("client.double_click_time_ms", "Double-click time in milliseconds for GUI widgets");
         addConfig("client.mml_Link", "MML Site Link");
+        addConfig("client.instrument_overlay_x_pos", "Instrument Overlay X-Pos");
+        addConfig("client.instrument_overlay_y_pct", "Instrument Overlay Y-Pos %");
+        addConfig("client.venue_tool_overlay_x_pos", "Venue Tool Overlay X-Pos");
+        addConfig("client.venue_tool_overlay_y_pct", "Venue Tool Overlay Y-Pos %");
         addConfig("server.listener_range", "Listener Range");
         addConfig("server.sheet_music_expires", "Sheet Music Expires");
-        addConfig("server.sheet_music_life_in_days", "Sheet Music Life in Days.");
+        addConfig("server.sheet_music_life_in_days", "Sheet Music Life in Days");
     }
 
     private void addEntities()
@@ -286,6 +310,10 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addEnum("group.mode.open", "Open");
         addEnum("group.mode.open.help01", "Anyone can join your group.");
         addEnum("group.mode.open.help02", "Click to toggle access mode.");
+
+        addEnum("item.overlay.position.left", "Left");
+        addEnum("item.overlay.position.center", "Center");
+        addEnum("item.overlay.position.right", "Right");
     }
 
     private void addErrors()

@@ -5,6 +5,9 @@ import aeronicamc.mods.mxtune.gui.group.GuiPin;
 import aeronicamc.mods.mxtune.gui.mml.GuiMXT;
 import aeronicamc.mods.mxtune.util.Misc;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
+
+import javax.annotation.Nullable;
 
 public class Handler
 {
@@ -31,4 +34,6 @@ public class Handler
     {
         mc.tell(() -> mc.setScreen(new TestScreen()));
     }
+
+    public static void openOverlayManagerScreen(@Nullable Screen parent) { mc.tell(() -> mc.setScreen(new OverlayManagerScreen(parent))); }
 }

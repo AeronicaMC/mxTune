@@ -66,7 +66,7 @@ public class ClientAudio
 
     public static String getDebugString()
     {
-        return String.format("AudioData %d/%d/%d", ActiveAudio.getDistanceSortedSources().size(), ActiveAudio.getDeleteQueueSize(), ActiveAudio.getCachedMidiSequenceCount());
+        return String.format("AudioData numSources: %d, deleteQ: %d, seqQ: %d", ActiveAudio.getDistanceSortedSources().size(), ActiveAudio.getDeleteQueueSize(), ActiveAudio.getCachedMidiSequenceCount());
     }
 
     public static List<AudioData> getAudioData()

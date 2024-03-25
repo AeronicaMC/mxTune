@@ -10,7 +10,7 @@ import net.minecraft.util.text.StringTextComponent;
 @SuppressWarnings("unused")
 public class GuiGroupButton extends MXButton
 {
-    static final ITextComponent EMPTY = new StringTextComponent("");
+    static final ITextComponent EMPTY = StringTextComponent.EMPTY;
     private boolean jamEnabled;
 
     public GuiGroupButton(IPressable pOnPress)

@@ -199,6 +199,6 @@ public class GuiPin extends MXScreen
 
     private ClientPlayerEntity player()
     {
-        return Objects.requireNonNull(getMC().player);
+        return Objects.requireNonNull(getMinecraft().player);
     }
 }

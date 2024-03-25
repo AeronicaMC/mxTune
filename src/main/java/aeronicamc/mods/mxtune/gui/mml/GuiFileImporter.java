@@ -303,7 +303,7 @@ public class GuiFileImporter extends MXScreen
         if (selectedEntry != null)
             ActionGet.INSTANCE.select(ImportHelper.importToMXTFile(selectedEntry.getPath()));
         if (doubleClicked)
-            getMC().mouseHandler.releaseMouse();
+            getMinecraft().mouseHandler.releaseMouse();
         onClose();
     }
 

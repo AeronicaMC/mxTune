@@ -17,6 +17,7 @@
 
 package aeronicamc.mods.mxtune.config;
 
+import aeronicamc.mods.mxtune.render.IOverlayItem;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
@@ -26,6 +27,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class MXTuneConfig
 {
+    public static final Object SYNC = new Object();
     public static final int SHEET_MUSIC_MAX_DAYS = 999999;
     private MXTuneConfig() { /* NOP */ }
 
@@ -34,22 +36,53 @@ public class MXTuneConfig
     {
         public final ConfigValue<Integer> doubleClickTime;
         public final ConfigValue<String> site;
+        public final ConfigValue<IOverlayItem.Position> instrumentOverlayXPosition;
+        public final ConfigValue<Integer> instrumentOverlayYPercent;
+        public final ConfigValue<IOverlayItem.Position> venueToolOverlayXPosition;
+        public final ConfigValue<Integer> venueToolOverlayYPercent;
 
         public Client(final ForgeConfigSpec.Builder builder)
         {
-            builder.comment("Client Only Settings")
-                    .push("client");
-
+            builder.comment("1) GUI widgets Double-click time")
+                    .push("1) GUI widgets Double-click time");
             doubleClickTime = builder
                     .comment("Double-click time in milliseconds for GUI widgets")
                     .translation("config.mxtune.client.double_click_time_ms")
                     .defineInRange("doubleClickTime", 500, 10, 5000);
+            builder.pop();
 
+            builder.comment("2) MML Site Link")
+                    .push("2) MML Site Link");
             site = builder
-                    .comment("Site Link")
+                    .comment("MML Site Link")
                     .translation("config.mxtune.client.mml_Link")
                     .define("site", "https://mabibeats.com/");
+            builder.pop();
 
+            builder.comment("3) Instrument Overlay Positions")
+                    .push("3) Instrument Overlay Positions");
+            instrumentOverlayXPosition = builder
+                    .comment("Instrument Overlay X Position")
+                    .translation("config.mxtune.client.instrument_overlay_x_pos")
+                    .defineEnum("instrumentOverlayXPosition", IOverlayItem.Position.LEFT);
+
+            instrumentOverlayYPercent = builder
+                    .comment("Instrument Overlay Y Percent down screen")
+                    .translation("config.mxtune.client.instrument_overlay_y_pct")
+                    .defineInRange("instrumentOverlayYPercent", 0, 0, 100);
+            builder.pop();
+
+            builder.comment("4) Venue Tool Overlay Positions")
+                    .push("4) Venue Tool Overlay Positions");
+            venueToolOverlayXPosition = builder
+                    .comment("Venue Tool Overlay X Position")
+                    .translation("config.mxtune.client.venue_tool_overlay_x_pos")
+                    .defineEnum("venueToolOverlayXPosition", IOverlayItem.Position.CENTER);
+
+            venueToolOverlayYPercent = builder
+                    .comment("Venue Tool Overlay Y Percent down screen")
+                    .translation("config.mxtune.client.venue_tool_overlay_y_pct")
+                    .defineInRange("venueToolOverlayYPercent", 70, 0, 100);
             builder.pop();
         }
     }
@@ -94,6 +127,14 @@ public class MXTuneConfig
     public static int getDoubleClickTimeMS() { return CLIENT.doubleClickTime.get(); }
 
     public static String getMmlLink() { return CLIENT.site.get(); }
+
+    public static IOverlayItem.Position getInstrumentOverlayPosition() { return CLIENT.instrumentOverlayXPosition.get(); }
+
+    public static int getInstrumentOverlayPercent() { return CLIENT.instrumentOverlayYPercent.get(); }
+
+    public static IOverlayItem.Position getVenueToolOverlayPosition() { return CLIENT.venueToolOverlayXPosition.get(); }
+
+    public static int getVenueToolOverlayPercent() { return CLIENT.venueToolOverlayYPercent.get(); }
 
     private static final ForgeConfigSpec serverSpec;
     public static final Server SERVER;

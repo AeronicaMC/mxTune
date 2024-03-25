@@ -30,6 +30,7 @@ import aeronicamc.mods.mxtune.managers.GroupManager;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.network.MultiPacketStringManager;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.render.RenderHelper;
 import aeronicamc.mods.mxtune.render.blockentity.MusicBlockEntityRenderer;
 import aeronicamc.mods.mxtune.render.entity.InfoRenderer;
 import aeronicamc.mods.mxtune.render.entity.MusicVenueInfoRenderer;
@@ -123,6 +124,7 @@ public class MXTune
         RenderTypeLookup.setRenderLayer(ModBlocks.MUSIC_BLOCK.get(), RenderType.cutoutMipped());
         ClientRegistry.bindTileEntityRenderer(ModBlockEntities.INV_MUSIC_BLOCK.get(), MusicBlockEntityRenderer::new);
         new InfoRenderer(Minecraft.getInstance().getTextureManager());
+        RenderHelper.init();
     }
 
     private void modLoadingComplete(FMLLoadCompleteEvent event)

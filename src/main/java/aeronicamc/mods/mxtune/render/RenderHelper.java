@@ -4,12 +4,14 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -21,10 +23,37 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
+import java.util.Objects;
+
 @SuppressWarnings("unused")
 public class RenderHelper
 {
+    static final int WIDTH = 160;
+    static final int HEIGHT = 32;
+    static final Minecraft mc = Minecraft.getInstance();
+    private static OverlayItemGui overlayItem;
+
     private RenderHelper() { /* NOP */ }
+
+    public static void init() {
+        overlayItem = new OverlayItemGui(mc);
+    }
+
+    public static OverlayItemGui getOverlayItemGui() {
+        return overlayItem;
+    }
+
+    static ClientPlayerEntity getPlayer() {
+        return Objects.requireNonNull(mc.player);
+    }
+
+    static int getSelectedSlot() {
+        return getPlayer().inventory.selected;
+    }
+
+    static ItemStack getSelectedStack() {
+        return getPlayer().inventory.getSelected();
+    }
 
     /**
      * Defaults to 256x256 texture sheet for use with the vanilla toast textures. <p></p>
@@ -38,7 +67,7 @@ public class RenderHelper
      * @param pVHeight      V height
      */
     static void blit(MatrixStack pMatrixStack, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
-        AbstractGui.blit(pMatrixStack, pX, pY, RenderEvents.BLIT_OFFSET, pUOffset, pVOffset, pUWidth, pVHeight, 256, 256);
+        AbstractGui.blit(pMatrixStack, pX, pY, 0, pUOffset, pVOffset, pUWidth, pVHeight, 256, 256);
     }
 
     /**

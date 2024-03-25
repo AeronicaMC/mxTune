@@ -4,6 +4,7 @@ import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.managers.GroupClient;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.SyncRequestMessage;
+import aeronicamc.mods.mxtune.render.RenderHelper;
 import aeronicamc.mods.mxtune.render.entity.InfoRenderer;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import net.minecraftforge.api.distmarker.Dist;
@@ -20,12 +21,14 @@ public class ClientEvents
     public static void event(ClientPlayerNetworkEvent.LoggedInEvent event)
     {
         GroupClient.clear();
+        RenderHelper.getOverlayItemGui().clear();
         PacketDispatcher.sendToServer(new SyncRequestMessage());
     }
 
     @SubscribeEvent
     public static void event(ClientPlayerNetworkEvent.LoggedOutEvent event)
     {
+        RenderHelper.getOverlayItemGui().clear();
         InfoRenderer.getInstance().clearInfoRendererInstances();
     }
 
@@ -34,6 +37,7 @@ public class ClientEvents
     {
         GroupClient.clear();
         ClientAudio.stopAll();
+        RenderHelper.getOverlayItemGui().clear();
         PacketDispatcher.sendToServer(new SyncRequestMessage());
     }
 }

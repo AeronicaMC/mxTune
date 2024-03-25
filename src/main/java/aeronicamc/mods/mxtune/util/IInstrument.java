@@ -4,8 +4,8 @@ import net.minecraft.item.ItemStack;
 
 public interface IInstrument
 {
-    static final String PATCH = "MXTunePatch";
-    static final String KEY_AUTO_SELECT = "MXTuneAutoSelect";
+    String PATCH = "MXTunePatch";
+    String KEY_AUTO_SELECT = "MXTuneAutoSelect";
     int getPatch(ItemStack itemStack);
     void setPatch(ItemStack itemStack, int patch);
     boolean getAutoSelect(ItemStack itemStack);

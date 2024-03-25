@@ -20,7 +20,7 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
     private int x;
     private int y;
     private ITextComponent labelName;
-    private ITextComponent labelText = new StringTextComponent("");
+    private ITextComponent labelText = StringTextComponent.EMPTY;
     private boolean centered;
     private boolean visible = true;
     private boolean background = false;
@@ -33,7 +33,7 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
 
     public MXLabel()
     {
-        this(Minecraft.getInstance().font, 0, 0, 0, 0, new StringTextComponent(""), TextColorFg.WHITE | MathHelper.ceil(255.0F) << 24);
+        this(Minecraft.getInstance().font, 0, 0, 0, 0, StringTextComponent.EMPTY, TextColorFg.WHITE | MathHelper.ceil(255.0F) << 24);
     }
 
     public MXLabel (FontRenderer pFontRenderer, int pX, int pY, int pWidth, int pHeight, ITextComponent pLabelText, int pTextColor)

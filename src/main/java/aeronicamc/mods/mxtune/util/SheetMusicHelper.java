@@ -434,7 +434,6 @@ public class SheetMusicHelper
                             .forEach(string -> contents.putString(String.format("%s%d", KEY_PART_ID, index[0]++), string));
                     compound.put(KEY_SHEET_MUSIC, contents);
 
-                    LOGGER.debug("Wrote {} title: \"{}\", extra: {}", musicType, musicTitle, extraData);
                     return true;
                 } else
                     LOGGER.warn("Number of parts out of range 1-{}. Found {}", Reference.MAX_MML_PARTS, partInstrumentIds.length);

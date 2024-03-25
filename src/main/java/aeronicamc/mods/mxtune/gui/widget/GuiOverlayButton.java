@@ -1,30 +1,30 @@
 package aeronicamc.mods.mxtune.gui.widget;
 
-import aeronicamc.mods.mxtune.gui.MusicBlockScreen;
+import aeronicamc.mods.mxtune.gui.MultiInstScreen;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-public class GuiHelpButton extends MXButton
+public class GuiOverlayButton extends MXButton
 {
     static final ITextComponent EMPTY = StringTextComponent.EMPTY;
-    private boolean helpEnabled;
+    private boolean buttonEnabled;
 
-    public GuiHelpButton(IPressable pOnPress)
+    public GuiOverlayButton(IPressable pOnPress)
     {
         super(0, 0, 20, 20, EMPTY, pOnPress);
     }
 
-    public boolean isHelpEnabled()
+    public boolean isButtonEnabled()
     {
-        return this.helpEnabled;
+        return this.buttonEnabled;
     }
 
-    public void setHelpEnabled(boolean helpEnabled)
+    public void setButtonEnabled(boolean buttonEnabled)
     {
-        this.helpEnabled = helpEnabled;
+        this.buttonEnabled = buttonEnabled;
     }
 
     @SuppressWarnings("deprecation")
@@ -32,49 +32,49 @@ public class GuiHelpButton extends MXButton
     public void renderButton(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
         if (this.visible)
         {
-            Minecraft.getInstance().getTextureManager().bind(MusicBlockScreen.GUI);
+            Minecraft.getInstance().getTextureManager().bind(MultiInstScreen.GUI);
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GuiHelpButton.Icon guiRedstoneButtonIcon;
-            if (this.helpEnabled)
+            GuiOverlayButton.Icon guiOverlayButtonIcon;
+            if (this.buttonEnabled)
             {
                 if (!this.active)
                 {
-                    guiRedstoneButtonIcon = GuiHelpButton.Icon.HELP_ENABLED_DISABLED;
+                    guiOverlayButtonIcon = GuiOverlayButton.Icon.BUTTON_ENABLED_DISABLED;
                 }
                 else if (isHovered)
                 {
-                    guiRedstoneButtonIcon = GuiHelpButton.Icon.HELP_ENABLED_HOVER;
+                    guiOverlayButtonIcon = GuiOverlayButton.Icon.BUTTON_ENABLED_HOVER;
                 }
                 else
                 {
-                    guiRedstoneButtonIcon = GuiHelpButton.Icon.HELP_ENABLED;
+                    guiOverlayButtonIcon = GuiOverlayButton.Icon.BUTTON_ENABLED;
                 }
             }
             else if (!this.active)
             {
-                guiRedstoneButtonIcon = GuiHelpButton.Icon.HELP_DISABLED_DISABLED;
+                guiOverlayButtonIcon = GuiOverlayButton.Icon.BUTTON_DISABLED_DISABLED;
             }
             else if (isHovered)
             {
-                guiRedstoneButtonIcon = GuiHelpButton.Icon.HELP_DISABLED_HOVER;
+                guiOverlayButtonIcon = GuiOverlayButton.Icon.BUTTON_DISABLED_HOVER;
             }
             else
             {
-                guiRedstoneButtonIcon = GuiHelpButton.Icon.HELP_DISABLED_UNLOCKED;
+                guiOverlayButtonIcon = GuiOverlayButton.Icon.BUTTON_DISABLED_UNLOCKED;
             }
 
-            this.blit(pMatrixStack, this.x, this.y, guiRedstoneButtonIcon.getX(), guiRedstoneButtonIcon.getY(), this.width, this.height);
+            this.blit(pMatrixStack, this.x, this.y, guiOverlayButtonIcon.getX(), guiOverlayButtonIcon.getY(), this.width, this.height);
         }
     }
 
     public enum Icon
     {
-        HELP_ENABLED(216, 0),
-        HELP_ENABLED_HOVER(216, 20),
-        HELP_ENABLED_DISABLED(216, 40),
-        HELP_DISABLED_UNLOCKED(236, 0),
-        HELP_DISABLED_HOVER(236, 20),
-        HELP_DISABLED_DISABLED(236, 40);
+        BUTTON_ENABLED(216, 0),
+        BUTTON_ENABLED_HOVER(216, 20),
+        BUTTON_ENABLED_DISABLED(216, 40),
+        BUTTON_DISABLED_UNLOCKED(236, 0),
+        BUTTON_DISABLED_HOVER(236, 20),
+        BUTTON_DISABLED_DISABLED(236, 40);
 
         private final int x;
         private final int y;

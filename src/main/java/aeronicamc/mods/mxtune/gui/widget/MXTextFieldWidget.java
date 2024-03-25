@@ -14,7 +14,7 @@ public class MXTextFieldWidget extends TextFieldWidget implements ILayout
 
     public MXTextFieldWidget(int pMaxLength)
     {
-        super(Minecraft.getInstance().font, 0, 0, 0, 0, new StringTextComponent(""));
+        super(Minecraft.getInstance().font, 0, 0, 0, 0, StringTextComponent.EMPTY);
         this.setMaxLength(pMaxLength);
     }
 

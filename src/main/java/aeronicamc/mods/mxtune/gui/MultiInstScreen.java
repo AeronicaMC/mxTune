@@ -26,7 +26,7 @@ import static aeronicamc.mods.mxtune.util.SheetMusicHelper.getSheetMusicSoundPro
 
 public class MultiInstScreen extends ContainerScreen<MultiInstContainer> implements ISlotChangedCallback
 {
-    private static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/multi_inst_item.png");
+    public static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/multi_inst_item.png");
     private static final ITextComponent AUTO_SELECT_ON = new TranslationTextComponent("gui.mxtune.switch.multi_inst_screen.auto_select_on").withStyle(TextFormatting.DARK_GRAY);
     private static final ITextComponent AUTO_SELECT_OFF = new TranslationTextComponent("gui.mxtune.switch.multi_inst_screen.auto_select_off").withStyle(TextFormatting.DARK_GRAY);
     private static final ITextComponent AUTO_SELECT_HELP01 = new TranslationTextComponent("gui.mxtune.switch.multi_inst_screen.auto_select.help01").withStyle(TextFormatting.RESET);
@@ -39,6 +39,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
 
     private final MXButton buttonChangeInstrument = new MXButton(this::openSelector);
     private final GuiVSlideSwitch autoSelectState = new GuiVSlideSwitch(p -> onChangeAuto());
+    private final GuiOverlayButton overlayButton = new GuiOverlayButton(p->Handler.openOverlayManagerScreen(null));
     private final GuiHelpButton helpButton = new GuiHelpButton(p -> helpClicked());
     private final GuiGroupButton groupButton = new GuiGroupButton(p -> onJamClicked());
 
@@ -70,6 +71,9 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         autoSelectState.setMessage(AUTO_SELECT_ON);
         autoSelectState.setPosition(xPos + 18 + 32 + 10, yPos + 36);
         this.addButton(autoSelectState);
+
+        overlayButton.setPosition(leftPos + imageWidth - 12 - 64, yPos + 53);
+        this.addButton(overlayButton);
 
         helpButton.setPosition(leftPos + imageWidth - 12 - 20, yPos + 53);
         this.addButton(helpButton);
@@ -137,6 +141,9 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         buttonChangeInstrument.addHooverText(false, INST_CHOOSER_HELP03);
         buttonChangeInstrument.addHooverText(false, autoSelectState.getOnOff() ? BUTTON_DISABLED : BUTTON_ENABLED);
         buttonChangeInstrument.active = !autoSelectState.getOnOff();
+        overlayButton.addHooverText(true, BUTTON_OVERLAY_HELP01);
+        overlayButton.addHooverText(false, BUTTON_OVERLAY_HELP02);
+        overlayButton.setButtonEnabled(true);
         groupButton.addHooverText(true, OPEN_GROUP);
         helpButton.addHooverText(true, HELP_HELP01);
         helpButton.addHooverText(false, helpButton.isHelpEnabled() ? HELP_HELP02 : HELP_HELP03);

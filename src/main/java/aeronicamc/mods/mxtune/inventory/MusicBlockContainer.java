@@ -137,7 +137,7 @@ public class MusicBlockContainer extends Container
     {
         if ((blockEntity != null) && (blockEntity.getLevel() != null) && blockEntity.getLevel().isClientSide)
             return ((MusicBlockEntity) blockEntity).getName();
-        return new StringTextComponent("");
+        return StringTextComponent.EMPTY;
     }
 
     @Override

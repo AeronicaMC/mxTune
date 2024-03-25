@@ -27,6 +27,8 @@ public class ModGuiHelper
     public static final ITextComponent HELP_HELP03 = new TranslationTextComponent("gui.mxtune.button.help.help03").withStyle(TextFormatting.GREEN);
     public static final ITextComponent BUTTON_DISABLED = new TranslationTextComponent("gui.mxtune.button.disabled").withStyle(TextFormatting.AQUA);
     public static final ITextComponent BUTTON_ENABLED = new TranslationTextComponent("gui.mxtune.button.enabled").withStyle(TextFormatting.AQUA);
+    public static final ITextComponent BUTTON_OVERLAY_HELP01 = new TranslationTextComponent("gui.mxtune.button.overlay_button.help01").withStyle(TextFormatting.RESET);
+    public static final ITextComponent BUTTON_OVERLAY_HELP02 = new TranslationTextComponent("gui.mxtune.button.overlay_button.help02").withStyle(TextFormatting.YELLOW);
 
     private ModGuiHelper() { /* NOOP */ }
 
