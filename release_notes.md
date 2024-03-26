@@ -1,3 +1,15 @@
+#### 2024-03-26 mxtune-1.16.5-3.0.0-rc.2
+  - **FYI** If you are running mxTune-1.16.5-beta worlds the below link can be used to update to rc.2 also. 
+    - [How to Update mxTune-1.16.5-beta worlds to rc.1](https://aeronicamc.github.io/mxtune/howto-update-mxtune-1.16.5-beta-to-rc.1/#how-to-update-a-saveworld-from-mxtune-1165-200-beta-2023-12-0876721460-to-mxtune-1165-300-rc-1)
+  - Added help buttons and hoover help texts to mxTune library and importer GUIs. 
+  - Standardize help button operation and use in gui classes. Enable double click selection in file choosers.
+  - Instrument and inventory (SheetMusic) synchronization fixes.
+  - Show file extensions in the MML import GUI.
+  - Improved the overlays for the Instrument and Music Venue Tool.
+    - The placement of the overlays can be changed via config or the Instrument GUI.
+      - Instrument GUI: New button added for Overlay Management.
+  - Code cleanup per IntelliJ and SonarCloud code analysis.
+
 #### 2024-01-05 mxtune-1.16.5-3.0.0-rc.1
   - **Breaking changes** see link below for instructions to update existing worlds.
   - **Important** [How to Update mxTune-1.16.5-beta worlds to rc.1](https://aeronicamc.github.io/mxtune/howto-update-mxtune-1.16.5-beta-to-rc.1/#how-to-update-a-saveworld-from-mxtune-1165-200-beta-2023-12-0876721460-to-mxtune-1165-300-rc-1)  
