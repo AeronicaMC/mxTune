@@ -39,7 +39,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
 
     private final MXButton buttonChangeInstrument = new MXButton(this::openSelector);
     private final GuiVSlideSwitch autoSelectState = new GuiVSlideSwitch(p -> onChangeAuto());
-    private final GuiOverlayButton overlayButton = new GuiOverlayButton(p->Handler.openOverlayManagerScreen(null));
+    private final GuiOverlayButton overlayButton = new GuiOverlayButton(p -> onOverlayClicked());
     private final GuiHelpButton helpButton = new GuiHelpButton(p -> helpClicked());
     private final GuiGroupButton groupButton = new GuiGroupButton(p -> onJamClicked());
 
@@ -54,7 +54,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
 
     private void openSelector(Button button)
     {
-        Objects.requireNonNull(minecraft).setScreen(new GuiMultiInstChooser(this, getMenu()));
+        getMinecraft().setScreen(new GuiMultiInstChooser(this, getMenu()));
     }
 
     @Override
@@ -181,6 +181,11 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
     private void onJamClicked()
     {
         PacketDispatcher.sendToServer(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_OPEN));
+    }
+
+    private void onOverlayClicked()
+    {
+        getMinecraft().setScreen(new OverlayManagerScreen(null));
     }
 
     @Override
