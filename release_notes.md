@@ -8,7 +8,7 @@
   - Improved the overlays for the Instrument and Music Venue Tool.
     - The placement of the overlays can be changed via config or the Instrument GUI.
       - Instrument GUI: New button added for Overlay Management.
-  - Code cleanup per IntelliJ and SonarCloud code analysis.
+  - Code cleanup per IntelliJ and SonarCloud code analysis. Reduce code duplication.
 
 #### 2024-01-05 mxtune-1.16.5-3.0.0-rc.1
   - **Breaking changes** see link below for instructions to update existing worlds.
