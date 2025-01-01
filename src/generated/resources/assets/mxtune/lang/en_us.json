@@ -153,7 +153,7 @@
   "gui.mxtune.gui_pin.group_disbanded": "Group Disbanded",
   "gui.mxtune.gui_pin.leaders_group": "%s's Group",
   "gui.mxtune.gui_pin.unexpected_error": "*** Unexpected Error ***",
-  "gui.mxtune.gui_test.title": "Gui Test Screen",
+  "gui.mxtune.gui_test.title": "Gui Test",
   "gui.mxtune.label.author": "Author:",
   "gui.mxtune.label.chord": "chord %s",
   "gui.mxtune.label.duration_value_total": "Duration All: ",

@@ -1,3 +1,6 @@
+#### 2025-01-01 mxtune-1.16.5-3.0.0
+  - first 1.16.5 release
+
 #### 2024-03-26 mxtune-1.16.5-3.0.0-rc.2
   - **FYI** If you are running mxTune-1.16.5-beta worlds the below link can be used to update to rc.2 also. 
     - [How to Update mxTune-1.16.5-beta worlds to rc.1](https://aeronicamc.github.io/mxtune/howto-update-mxtune-1.16.5-beta-to-rc.1/#how-to-update-a-saveworld-from-mxtune-1165-200-beta-2023-12-0876721460-to-mxtune-1165-300-rc-1)

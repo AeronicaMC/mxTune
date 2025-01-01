@@ -20,7 +20,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
     @Override
     protected void addTranslations()
     {
-        add("gui.mxtune.gui_test.title", "Gui Test Screen");
+        add("gui.mxtune.gui_test.title", "Gui Test");
 
         add(ModEntities.MUSIC_SOURCE.get(), "[MusicSource]");
 
